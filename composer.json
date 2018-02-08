@@ -1,0 +1,31 @@
+{
+    "name": "serosensa/user-image-handling",
+    "description": "Handle user-uploaded images in Laravel",
+    "type": "library",
+    "require": {
+        "intervention/image": "^2.4",
+        "php": ">=5.4.0"
+    },
+    "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.1"
+    },
+    "authors": [
+        {
+            "name": "Roxy Walsh",
+            "email": "roxy@serosensa.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Serosensa\\UserImage\\UserImageServiceProvider",
+                "Intervention\\Image\\ImageServiceProvider"
+            ],
+            "aliases": {
+                "UserImage": "Serosensa\\UserImage\\UserImageFacade",
+                "Image": "Intervention\\Image\\Facades\\Image"
+            }
+        }
+    }
+}
