@@ -35,9 +35,9 @@ class UserImageServiceProvider extends ServiceProvider
         //Load packaged views
         $this->loadViewsFrom(__DIR__.'/views', 'UserImage');
 
-//        $this->app->register('\Intervention\Image');
-//        $loader = \Illuminate\Foundation\AliasLoader::getInstance();
-//        $loader->alias('Image', 'Intervention\Image\Facades\Image');
+        $this->app->register('\Intervention\Image');
+        $loader = \Illuminate\Foundation\AliasLoader::getInstance();
+        $loader->alias('Image', 'Intervention\Image\Facades\Image');
 
 
     }
