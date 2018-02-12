@@ -4,12 +4,17 @@ namespace Serosensa\UserImage;
 use Carbon\Carbon; //dates and times
 
 use Illuminate\Http\Request;
+//use Intervention\Image\Image;
 use \Storage;
 use \Session;
-use Intervention\Image;
+use Intervention\Image\Facades\Image;
 
 class ImageService
 {
+
+//    public function __construct(\Intervention\Image $interventionImage){
+//        $this->interventionImage = $interventionImage;
+//    }
 
     public function test(){
         return 'IMAGE SERVICE';
@@ -96,6 +101,8 @@ class ImageService
 
 
 
+//                    $intervention = new \Intervention\Image\Image;
+//                    dd($intervention);
                     Image::make($storedFile)
 //                ->orientate() //not sure if working - orient according to camera data
                         ->resize($maxWidth, null, function ($constraint){ //resize width
