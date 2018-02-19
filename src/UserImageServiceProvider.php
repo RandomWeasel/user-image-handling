@@ -16,6 +16,17 @@ class UserImageServiceProvider extends ServiceProvider
     public function boot()
     {
         include __DIR__.'/routes.php';
+
+        //publish assets
+        $this->publishes([
+        __DIR__.'/js' => resource_path('js/vendor/serosensa')
+        ], 'js-assets');
+
+
+        $this->publishes([
+            __DIR__.'/scss' => resource_path('sass/vendor/serosensa')
+        ], 'sass-assets');
+
     }
 
     /**

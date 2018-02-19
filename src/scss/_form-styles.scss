@@ -1,0 +1,120 @@
+@mixin message($bgcol, $textcol:null) {
+  padding: 4px;
+  margin: 10px auto;
+  background-color: ($bgcol);
+  border: 1px solid darken($bgcol, 20%);
+  color: darken($bgcol, 20%);
+
+  @if($textcol != null){
+    color: $textcol;
+  }
+
+}
+
+.message-formError {
+  @include message(#eb8c78);
+}
+
+.message-formSuccess {
+  @include message(#c3e898);
+}
+
+
+// ~~~~~~~~~~~~~~~~~~~~~ IMAGE DISPLAY COMPONENT ~~~~~~~~~~~~~~~~~~~~~
+
+.wrap-image-imageDisplay {
+  position: relative;
+  min-height: 200px;
+
+  &.isPrimary {
+    grid-column-start: 1;
+    grid-column-end: 3;
+
+    grid-row-start: 1;
+    grid-row-end: 3;
+  }
+
+  &.notShown {
+    .image{
+      opacity: 0.5;
+    }
+  }
+
+  .image {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-position: center;
+    background-size: cover;
+  }
+
+  .block-text {
+    position: absolute;
+    bottom: 0;
+    width: 80%;
+    left: 10%;
+    right: 10%;
+    background-color: rgba(white, 0.8);
+    padding: 5px;
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+
+    .isPrimary {
+      @include icon-before('\f005', #ffcc00);
+      display: block;
+    }
+
+    .notShown {
+      @include icon-before('\f00d', red);
+      display: block;
+    }
+
+    .category {
+
+    }
+
+    .caption {
+      flex-basis: 100%;
+      font-style: italic;
+      margin-top: 4px;
+    }
+  }
+
+  .button-edit {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+  }
+}
+
+
+// ~~~~~~~~~~~~~~~~~~~~~ IMAGE EDITOR COMPONENT / POPOVER ~~~~~~~~~~~~~~~~~~~~~
+.popover-imageEditor {
+  max-width: 90%;
+  height: 80%;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-wrap: wrap;
+
+  .title {
+    text-align: center;
+    font-size: 1.1rem;
+  }
+
+  .col-half {
+    flex-basis: 49%
+  }
+}

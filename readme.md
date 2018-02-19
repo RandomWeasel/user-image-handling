@@ -1,5 +1,18 @@
 This package is incomplete
 
+##Setup
+
+###JS files (vue / general frontend)
+- The file `userImageApp.js` registers all vue components provided by the package, 
+- Export this file by running `php artisan vendor:publish --tag=js-assets` - this will export all js files to `resources/assets/js/vendor/serosensa`.  
+- These files should not be directly modified as they will be over-written on package updates.  To force an update, add `--force` to the publish command
+- Require this file in the applications' main app.js `require('./vendor/serosensa/userImageApp.js');` before the main vue instance is created but after vue is required
+
+##Styling
+- include the _form-styles.scss sheet in your main sass file.  Include this before your own style sheets so that you can easily override the styling 
+- Publish this file by running `php artisan vendor:publish --tag=sass-assets` - this will export scss files to  `resources/assets/sass/vendor/serosensa`
+
+
 
 ##Image Uploads - via ImageService
 - the ImageService handles all aspects of image file uploads
@@ -70,7 +83,42 @@ This package is incomplete
 
 
 
+##Existing Images - Displaying / Editing
+- see `examples/imageUploadPage.blade.php`` for a full usage example, including all options
+- Display images using the image-display component - use this within a foreach loop of images, passing the data for a single image to the component
+```
+<image-display :image="{{$image}}" :categories="{{$propertyImageTypes}}" class="">
+</image-display>
+```
 
+- Optionally, pass an array of categories to the component.  A categoryName will be generated using the `name` field of each category
+- This component displays the image, caption, and other details such as if is main image
+- To allow editing, include the image-editor component between the open/close tags of the image-display component.  This creates an edit button and pop-up editor window
+
+```
+<image-editor class="" :image="{{$image}}" post-url="{{route('propertyImageUpdate', $image->id)}}" :categories="{{$propertyImageTypes}}">
+
+    <div slot="title" class="title">Edit Image</div>
+
+</image-editor>
+```
+- Pass in the data for a single image, the url / route the edit form shoudl post to (must be a POST route), and optionally an array of categories.
+- There are a number of slots within this component, all of which are optional.  See the example file for useage examples.  These are:
+    - title             -   title for popover
+    - categories        -   scoped slot within which category selection inputs can be created (see example)
+    - label_is_primary  -   custom label text
+    - label_is_shown    -   custom label text
+    - subtext_caption   -   additional text below the caption
+- When used as a pair, these two components display a preview of the image with various extra details and an edit button.  When edits are saved, the preview data also updates.
+- Additional classes can be passed to style either or both components if required.  Some basic styles are included.
+- Validation should be carried out in the controller / custom request as normal.  On validation fail, laravel returns a json array of errors, which the editor window will display alongside the appropriate fields.
+
+
+##Misc
+- **Field Errors** - the field-errors component displays all error messages for a given field.  Simply pass in the errors object and the name of the field to display errors for.
+```
+<field-errors :errorObject="errors.is_primary"></field-errors>
+```
 
     
 ##TODO 
