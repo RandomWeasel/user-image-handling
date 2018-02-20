@@ -148,11 +148,24 @@
     },
 
     mounted: function() {
-        console.log('Component mounted.');
-        console.log(this.$fetchHeaders);
-//        console.log(this.$parent);
 
-//        this.imageData = this.image;
+        var thisVue = this;
+
+        //listener for updated image data
+        bus.$on('updatedImageData', function(updatedImageData){
+
+
+            //when an edit is saved
+            //if the edited image was set to be the primary image, remove this from all other editors
+            if(updatedImageData.is_primary == true){
+
+                if(thisVue.imageData.id != updatedImageData.id){
+                    thisVue.imageData.is_primary = false;
+                }
+
+            }
+
+        })
     },
 
     props: [
