@@ -18,9 +18,9 @@ require('./interactions');
  */
 //
 //Vue.component('example', require('./components/Example.vue'));
-Vue.component('image-editor', require('./components/image-editor.vue'));
-Vue.component('field-errors', require('./components/field-errors.vue'));
-Vue.component('image-display', require('./components/image-display.vue'));
+Vue.component('image-editor', require('./image-editor.vue'));
+Vue.component('field-errors', require('./field-errors.vue'));
+Vue.component('image-display', require('./image-display.vue'));
 
 ////vue components
 //require('./components/characterLimit.js');

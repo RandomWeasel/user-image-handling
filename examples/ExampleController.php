@@ -16,7 +16,8 @@ use Serosensa\UserImage\ImageService;
 class ExampleController extends Controller
 {
 
-    public function __construct(ImageService $imageService){
+    public function __construct(ImageService $imageService)
+    {
         $this->imageService = $imageService;
     }
 

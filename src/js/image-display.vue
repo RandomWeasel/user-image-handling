@@ -47,20 +47,27 @@
 
             //listener for updated image data
             bus.$on('updatedImageData', function(updatedImageData){
-                thisVue.imageData = Object.assign({}, updatedImageData);
+
+                //update the displayed image
+                //but only if it's the same image
+                if(updatedImageData.id == thisVue.imageData.id){
+                    thisVue.imageData = Object.assign({}, updatedImageData);
+                }
             })
         },
 
         computed: {
             categoryName: function(){
-                if( this.categories ){
-                    var categoryId = this.imageData.category_id;
-//                    console.log(categoryId);
+                var categoryId = this.imageData.category_id;
+
+                if( this.categories && categoryId ){
+
                     var category = this.categories.find(category => category.id == categoryId);
                     var categoryName = category.name;
                     console.log('category: ' + category);
                     console.log(categoryName);
                     return categoryName
+
                 }  else {
                     return '';
                 }

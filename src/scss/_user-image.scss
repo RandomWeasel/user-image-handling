@@ -1,24 +1,4 @@
-@mixin message($bgcol, $textcol:null) {
-  padding: 4px;
-  margin: 10px auto;
-  background-color: ($bgcol);
-  border: 1px solid darken($bgcol, 20%);
-  color: darken($bgcol, 20%);
-
-  @if($textcol != null){
-    color: $textcol;
-  }
-
-}
-
-.message-formError {
-  @include message(#eb8c78);
-}
-
-.message-formSuccess {
-  @include message(#c3e898);
-}
-
+@import "forms";
 
 // ~~~~~~~~~~~~~~~~~~~~~ IMAGE DISPLAY COMPONENT ~~~~~~~~~~~~~~~~~~~~~
 
@@ -95,26 +75,47 @@
 
 // ~~~~~~~~~~~~~~~~~~~~~ IMAGE EDITOR COMPONENT / POPOVER ~~~~~~~~~~~~~~~~~~~~~
 .popover-imageEditor {
-  max-width: 90%;
-  height: 80%;
+  max-width: 80%;
+  height: 70%;
   position: fixed;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
   margin: auto;
-  padding: 20px;
+  padding: 40px;
   display: flex;
   justify-content: center;
   align-content: center;
   flex-wrap: wrap;
+  background-color: white;
+  overflow: auto;
+  box-shadow: 0 5px 79px 43px rgba(grey, 0.2), 0 5px 27px 6px rgba(grey, 0.2) inset;
+  border: 1px solid #80808066;
+  border-radius: 6px;
+  z-index: 1000;
+
+
+  .content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+  }
 
   .title {
     text-align: center;
     font-size: 1.1rem;
+    margin-bottom: 6px;
   }
 
   .col-half {
     flex-basis: 49%
+  }
+
+  .button-cancel,
+  .button-save {
+    flex-basis: 100%;
+    text-align: center;
   }
 }

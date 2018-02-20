@@ -1,0 +1,22 @@
+@mixin message($bgcol, $textcol:null) {
+  padding: 4px;
+  margin: 10px auto;
+  background-color: ($bgcol);
+  border: 1px solid darken($bgcol, 20%);
+  color: darken($bgcol, 20%);
+
+  @if($textcol != null){
+    color: $textcol;
+  }
+
+}
+
+.message-formError {
+  @include message(#eb8c78);
+}
+
+.message-formSuccess {
+  @include message(#c3e898);
+}
+
+

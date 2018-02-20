@@ -9,7 +9,7 @@ This package is incomplete
 - Require this file in the applications' main app.js `require('./vendor/serosensa/userImageApp.js');` before the main vue instance is created but after vue is required
 
 ##Styling
-- include the _form-styles.scss sheet in your main sass file.  Include this before your own style sheets so that you can easily override the styling 
+- include the _user-image.scss sheet in your main sass file.  Include this before your own style sheets so that you can easily override the styling 
 - Publish this file by running `php artisan vendor:publish --tag=sass-assets` - this will export scss files to  `resources/assets/sass/vendor/serosensa`
 
 
@@ -85,7 +85,7 @@ This package is incomplete
 
 ##Existing Images - Displaying / Editing
 - see `examples/imageUploadPage.blade.php`` for a full usage example, including all options
-- Display images using the image-display component - use this within a foreach loop of images, passing the data for a single image to the component
+- Display images using the image-display component - use this within a  php foreach loop or v-for of images, passing the data for a single image to the component
 ```
 <image-display :image="{{$image}}" :categories="{{$propertyImageTypes}}" class="">
 </image-display>

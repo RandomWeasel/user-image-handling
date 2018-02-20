@@ -21,7 +21,7 @@
                     <div class="popover-image">
                         <img :src="'/img/property-images/' + image.filename" alt="">
 
-                        <div class="dates">
+                        <div class="form-row dates">
                             <span>Created at: {{createdAt}}</span>
                             <span>Updated at: {{updatedAt}}</span>
                         </div>
