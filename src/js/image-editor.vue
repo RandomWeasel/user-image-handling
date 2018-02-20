@@ -171,6 +171,23 @@
         }
     },
 
+    watch: {
+
+        //if an image is made primary, automatically mark as shown
+        'imageData.is_primary': function(val){
+            if(this.imageData.is_primary == true){
+                this.imageData.is_shown = true;
+            }
+        },
+
+        //if an image is marked not shown, automatically set is_primary to false
+        'imageData.is_shown': function(val){
+            if(this.imageData.is_shown == false){
+                this.imageData.is_primary = false;
+            }
+        }
+    },
+
     methods: {
         cancelImageEdits: function(){
             this.showPopover = false;

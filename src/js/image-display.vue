@@ -48,6 +48,13 @@
             //listener for updated image data
             bus.$on('updatedImageData', function(updatedImageData){
 
+
+                //if the image was set to be the primary image, remove this from all displayed images
+                //this will be re-added to the currently edited image next
+                if(updatedImageData.is_primary == true){
+                    thisVue.imageData.is_primary = false;
+                }
+
                 //update the displayed image
                 //but only if it's the same image
                 if(updatedImageData.id == thisVue.imageData.id){
