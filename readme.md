@@ -91,8 +91,8 @@ This package is incomplete
 </image-display>
 ```
 
-- Optionally, pass an array of categories to the component.  A categoryName will be generated using the `name` field of each category
 - This component displays the image, caption, and other details such as if is main image
+- Optionally, pass an array of categories to the component.  A categoryName will be generated using the `name` field of each category and requires a `category_id` field on the image.
 - To allow editing, include the image-editor component between the open/close tags of the image-display component.  This creates an edit button and pop-up editor window
 
 ```
@@ -102,10 +102,10 @@ This package is incomplete
 
 </image-editor>
 ```
-- Pass in the data for a single image, the url / route the edit form shoudl post to (must be a POST route), and optionally an array of categories.
+- Pass in the data for a single image, the url / route the edit form should post to (must be a POST route), and optionally an array of categories.
 - There are a number of slots within this component, all of which are optional.  See the example file for useage examples.  These are:
     - title             -   title for popover
-    - categories        -   scoped slot within which category selection inputs can be created (see example)
+    - categories        -   scoped slot within which category selection inputs can be created (see example).  Requires a category_id field on the image
     - label_is_primary  -   custom label text
     - label_is_shown    -   custom label text
     - subtext_caption   -   additional text below the caption

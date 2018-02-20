@@ -8,8 +8,9 @@ use Serosensa\UserImage\Requests\IsValidImageRequest;
 use Serosensa\UserImage\ImageService;
 
 /* IMAGE HANDLING EXAMPLES
- * This controller contains examples of using the var functions of this package
+ * This controller contains examples of using the various functions of this package
  * Feel free to copy these examples into your own controller and modify as required
+ * Remember you'll need to change Model and function names to match those of your own application
  * Please also see the README for full details on available options
  */
 
@@ -58,5 +59,84 @@ class ExampleController extends Controller
         #5 - return a response to the page - you may want to display the success message on the page
         return redirect()->back()->with('redirectMessage', 'Images Uploaded' );
 
+    }
+
+
+    //display existing images on a page - edit if required
+    public function existingImages($parentId){
+
+        //parent refers to the 'owner' of the image(s)
+        //for example, the article to which the images belong
+
+        //#1 - get all the images belonging to the same parent
+        //this code relies on the parent model having an 'images' method
+        $parent = Parent::findOrFail($parentId);
+        $images = $parent->images;
+
+
+        //#1a - get all the image categories (if required)
+        //this functionality assumes a category_id field on each image
+        $imageCategories = ImageCategories::all();
+
+
+        //#3 - return the view with data
+        return view('imageEditPage', compact('parent', 'images', 'imageCategories'));
+
+    }
+
+
+    //post the image editing forms to a route like this
+    public function imageUpdate($imageId, Request $request){
+
+        //parent refers to the 'owner' of the image(s)
+        //for example, the article to which the images belong
+
+        #1 - get the image from the database
+        $image = Image::findOrFail($imageId);
+
+
+        //#2 - validate here, or in a custom request, if required
+
+
+        //#3 - clean the request as we're using 'update' (ensure fields are fillable)
+        $request = $request->except('_method', '_token');
+
+
+        //#4 - set checkbox defaults (overridden if checked)
+        //as un-checked checkboxes are missing from the request
+        if (!isset($request['is_primary'])) {
+            $request['is_primary'] = 0;
+        }
+
+        if (!isset($request['is_shown'])) {
+            $request['is_shown'] = 0;
+
+            //if not shown, cannot be primary
+            $request['is_primary'] = 0;
+        }
+
+
+        #5 - update the image in the database
+        $image->update($request);
+
+
+        #6 - update other related images, if required
+
+        //if this image is_primary, remove this from all other images belonging to the parent
+        //the below requires a 'parent' or equivalent method on the image model, and an images method on the parent model
+        if ($request['is_primary'] == 1) {
+            $otherImages = $image->parent->images->except($imageId);
+
+            foreach ($otherImages as $anImage) {
+                $anImage->is_primary = 0;
+                $anImage->save();
+            }
+        }
+
+        //#7 - return response to the page - the message is displayed by the image-editor component
+        return response()->json([
+            'success' => 'true',
+            'message' => 'Image Updated',
+        ]);
     }
 }
