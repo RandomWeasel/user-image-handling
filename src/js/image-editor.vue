@@ -12,8 +12,6 @@
             </slot>
 
 
-            <!--{!! Form::model($image, ['route' => ['propertyImageUpdate', $image->id], 'method' => 'put', 'class' => 'form-commonstyle content']) !!}-->
-
             <form class="form-commonstyle content">
 
 
@@ -180,11 +178,7 @@
             var rotation = rotationData[1];
 
             //check if was this image being rotated
-            console.log('image being edited ' + imageId);
-
             if(imageId == thisVue.imageData.id){
-                console.log('thisimage ' + thisVue.imageData.id);
-                console.log(rotation);
                 thisVue.$set(thisVue.imageData, 'rotation', rotation);
             }
 
@@ -236,12 +230,11 @@
 
         makeVersionedImage: function(){
             var timestamp = Math.random();
-            console.log('new versioned image image-editor');
             return this.imageData.filename + '?v=' + timestamp;
         },
 
         submitImageEdits: function(){
-            console.log('submit clicked!');
+//            console.log('submit clicked!');
             var thisVue = this;
 
             //clear errors
