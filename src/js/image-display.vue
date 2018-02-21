@@ -38,7 +38,7 @@
         data(){
             return {
                 imageData: Object.assign({}, this.image),
-                versionedImage: this.image.filename
+                versionedImage: this.image.filename //initial value - no version number
             }
         },
 
@@ -61,8 +61,8 @@
                 if(updatedImageData.id == thisVue.imageData.id){
                     thisVue.imageData = Object.assign({}, updatedImageData);
 
-                    thisVue.$set(thisVue, 'versionedImage', thisVue.imgPath());
-                    thisVue.versionedImage = thisVue.imgPath();
+                    //create a new versioned image to force a reload
+                    thisVue.versionedImage = thisVue.makeVersionedImage();
                 }
             })
         },
@@ -75,8 +75,6 @@
 
                     var category = this.categories.find(category => category.id == categoryId);
                     var categoryName = category.name;
-                    console.log('category: ' + category);
-                    console.log(categoryName);
                     return categoryName
 
                 }  else {
@@ -86,9 +84,9 @@
         },
 
         methods: {
-            imgPath: function(){
+            makeVersionedImage: function(){
                 var timestamp = Math.random();
-                console.log(timestamp);
+                console.log('new versioned image image-display');
                 return this.imageData.filename + '?v=' + timestamp;
             }
         }

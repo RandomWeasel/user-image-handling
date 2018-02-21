@@ -20,7 +20,7 @@
                 <div class="col-half">
                     <div class="popover-image">
 
-                        <div class="image" :style=" 'background-image:url(/img/property-images/' + image.filename + '); transform: rotate(' +  imageData.rotation + 'deg)' "></div>
+                        <div class="image" :style=" 'background-image:url(/img/property-images/' + versionedImage + '); transform: rotate(' +  imageData.rotation + 'deg)' "></div>
 
                         <!--<img :src="'/img/property-images/' + image.filename" alt="" :style="'transform: rotate(' +  imageData.rotation + 'deg)'">-->
 
@@ -146,9 +146,8 @@
             showPopover: false,
             success: '',
             statusMessage: '',
-            errors: {
-//                is_primary: ['an error!', 'another Error!']
-            }
+            errors: {},
+            versionedImage: this.image.filename //initial value - no version number
         }
     },
 
@@ -156,11 +155,9 @@
 
         var thisVue = this;
 
-        //listener for updated image data
+        //listener for updated image data (when an edit is saved)
         bus.$on('updatedImageData', function(updatedImageData){
 
-
-            //when an edit is saved
             //if the edited image was set to be the primary image, remove this from all other editors
             if(updatedImageData.is_primary == true){
 
@@ -168,6 +165,16 @@
                     thisVue.imageData.is_primary = false;
                 }
 
+            }
+
+            //if it was this image which was edited
+            if(updatedImageData.id == thisVue.imageData.id){
+
+                //create a new versioned image to force a reload
+                thisVue.versionedImage = thisVue.makeVersionedImage();
+
+                //remove the rotation value to start fresh
+                thisVue.imageData.rotation = 0;
             }
 
         });
@@ -235,6 +242,12 @@
             //by replacing with the original data
 //            this.imageData = Object.assign({}, this.image);
 
+        },
+
+        makeVersionedImage: function(){
+            var timestamp = Math.random();
+            console.log('new versioned image image-editor');
+            return this.imageData.filename + '?v=' + timestamp;
         },
 
         submitImageEdits: function(){
