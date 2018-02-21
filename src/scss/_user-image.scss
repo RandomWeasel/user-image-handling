@@ -1,3 +1,4 @@
+@import "utilities";
 @import "forms";
 
 // ~~~~~~~~~~~~~~~~~~~~~ IMAGE DISPLAY COMPONENT ~~~~~~~~~~~~~~~~~~~~~
@@ -95,12 +96,36 @@
   border-radius: 6px;
   z-index: 1000;
 
+  @include TABLET{
+    align-content: flex-start;
+  }
+
 
   .content {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
+  }
+
+  .popover-image {
+    position: relative;
+    padding-top: 100%;
+
+
+    .image {
+      //border: 1px solid rgba(128, 128, 128, 0.4);
+      position: absolute;
+      top: 0;
+      bottom: 30px;
+      left: 0;
+      right: 0;
+      background-size: contain;
+      background-repeat: no-repeat;
+      width: 100%;
+      padding-top: 50%;
+      background-position: center;
+    }
   }
 
   .title {
@@ -110,12 +135,52 @@
   }
 
   .col-half {
-    flex-basis: 49%
+    flex-basis: 49%;
+
+    @include TABLET {
+      flex-basis: 100%;
+    }
   }
 
   .button-cancel,
   .button-save {
     flex-basis: 100%;
     text-align: center;
+  }
+
+  .wrap-buttonsRotate {
+    position: absolute;
+    top: 11px;
+    left: 5px;
+  }
+
+  .button-rotate {
+    border: 1px solid lightgrey;
+    background-color: rgba(lightslategrey, 0.6);
+    transition: all 2s;
+    padding: 3px 5px;
+    margin-right: 1px;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+
+    &:hover {
+      background-color: lighten(rgba(lightslategrey, 0.6), 15%);
+    }
+
+    &:before {
+      font-family: fontawesome;
+    }
+
+    &.--acw {
+      &:before {
+        content: '\f0e2';
+      }
+    }
+    &.--cw {
+      &:before{
+        content: '\f01e';
+      }
+    }
   }
 }

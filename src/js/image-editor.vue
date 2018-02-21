@@ -19,7 +19,12 @@
 
                 <div class="col-half">
                     <div class="popover-image">
-                        <img :src="'/img/property-images/' + image.filename" alt="">
+
+                        <div class="image" :style=" 'background-image:url(/img/property-images/' + image.filename + '); transform: rotate(' +  imageData.rotation + 'deg)' "></div>
+
+                        <!--<img :src="'/img/property-images/' + image.filename" alt="" :style="'transform: rotate(' +  imageData.rotation + 'deg)'">-->
+
+                        <image-rotation :image-id="image.id"></image-rotation>
 
                         <div class="form-row dates">
                             <span>Created at: {{createdAt}}</span>
@@ -163,6 +168,27 @@
                     thisVue.imageData.is_primary = false;
                 }
 
+            }
+
+        });
+
+        //set default rotation value to prevent errors
+//        thisVue.imageData.rotation = 0;
+
+        //listener for rotation data
+        //add the rotation value to imageData
+        bus.$on('rotation', function(rotationData){
+
+            var imageId = rotationData[0];
+            var rotation = rotationData[1];
+
+            //check if was this image being rotated
+            console.log('image being edited ' + imageId);
+
+            if(imageId == thisVue.imageData.id){
+                console.log('thisimage ' + thisVue.imageData.id);
+                console.log(rotation);
+                thisVue.$set(thisVue.imageData, 'rotation', rotation);
             }
 
         })

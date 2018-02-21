@@ -1,0 +1,40 @@
+//=============== MEDIA QUERIES ==================
+
+$breakpoint-pro: 1000px;
+$breakpoint-tablet: 800px;
+$breakpoint-hybrid: 600px;
+$breakpoint-mobile: 400px;
+
+$breakpoint-nav: $breakpoint-pro;
+$breakpoint-logo: $breakpoint-hybrid;
+$breakpoint-content: $content-width-max;
+
+@mixin PRO {
+  @media screen and (max-width: $breakpoint-pro){
+    @content;
+  }
+}
+
+@mixin TABLET {
+  @media screen and (max-width: $breakpoint-tablet){
+    @content;
+  }
+}
+
+@mixin HYBRID {
+  @media screen and (max-width: $breakpoint-hybrid){
+    @content;
+  }
+}
+
+@mixin MOBILE {
+  @media screen and (max-width: $breakpoint-mobile){
+    @content;
+  }
+}
+
+@mixin NAV {
+  @media screen and (max-width: $breakpoint-nav){
+    @content;
+  }
+}
