@@ -2,8 +2,8 @@
 
     <div class="wrap-buttonsRotate">
 
-        <span class="button-rotate --acw" v-on:click="rotateAcw"></span>
-        <span class="button-rotate --cw" v-on:click="rotateCw"></span>
+        <span class="button-rotate --acw" v-on:click="rotateAcw" v-html="iconRotateAcw"></span>
+        <span class="button-rotate --cw" v-on:click="rotateCw" v-html="iconRotateCw"></span>
 
     </div>
 
@@ -12,10 +12,17 @@
 
 <script>
 
+
+    //import icons
+    import iconRotateAcw from './icons/icon-rotate-acw.js';
+    import iconRotateCw from './icons/icon-rotate-cw.js';
+
     export default{
         data(){
             return {
-                'rotation': 0
+                'rotation': 0,
+                'iconRotateAcw': iconRotateAcw,
+                'iconRotateCw': iconRotateCw
             }
         },
 

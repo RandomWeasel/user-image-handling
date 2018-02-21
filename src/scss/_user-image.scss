@@ -1,6 +1,9 @@
 @import "utilities";
 @import "forms";
 
+$user-image-icon-color-1: #999ea2 !default;
+$user-image-icon-color-2: lightslategrey !default;
+
 // ~~~~~~~~~~~~~~~~~~~~~ IMAGE DISPLAY COMPONENT ~~~~~~~~~~~~~~~~~~~~~
 
 .wrap-image-imageDisplay {
@@ -155,32 +158,51 @@
   }
 
   .button-rotate {
-    border: 1px solid lightgrey;
-    background-color: rgba(lightslategrey, 0.6);
+    border: 1px solid #999ea2;
+    //background-color: rgba(lightslategrey, 0.6);
     transition: all 2s;
-    padding: 3px 5px;
+    padding: 3px 7px;
     margin-right: 1px;
     border-radius: 4px;
     color: white;
     cursor: pointer;
+    display: inline-block;
+    width: 40px;
+    height: auto;
+    background-color: rgba(211, 211, 211, 0.29);
 
     &:hover {
       background-color: lighten(rgba(lightslategrey, 0.6), 15%);
     }
 
-    &:before {
-      font-family: fontawesome;
+    svg {
+      width: 100%;
     }
+  }
+}
 
-    &.--acw {
-      &:before {
-        content: '\f0e2';
-      }
-    }
-    &.--cw {
-      &:before{
-        content: '\f01e';
-      }
-    }
+.image-editor-icon {
+
+  .color1-stroke,
+  .color2-stroke {
+    fill:none;
+    stroke-width:11;
+    stroke-linecap:square;
+    stroke-linejoin:round;
+  }
+  .color1-stroke{
+    stroke:$user-image-icon-color-1;
+  }
+
+  .color2-stroke{
+    stroke:$user-image-icon-color-2;
+  }
+
+  .color1-fill {
+    fill: $user-image-icon-color-1;
+  }
+
+  .color2-fill {
+    fill: $user-image-icon-color-2;
   }
 }

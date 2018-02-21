@@ -12,6 +12,10 @@ This package is incomplete
 - include the _user-image.scss sheet in your main sass file.  Include this before your own style sheets so that you can easily override the styling 
 - Publish this file by running `php artisan vendor:publish --tag=sass-assets` - this will export scss files to  `resources/assets/sass/vendor/serosensa`
 
+###Icons
+- Icons can be re-coloured by setting values for `$user-image-icon-color-1` and `$user-image-icon-color-2` - set these values before pulling in the vendor style sheets (eg in settings) to override the defaults.  Some icons will only use color1.
+- Icons exist as js files in js/icons which are pulled in by each template as required
+
 
 
 ##Image Uploads - via ImageService

@@ -137,8 +137,9 @@ class ExampleController extends Controller
         }
 
         //#7 - call the imageService to rotate the image file (if required)
+        //make sure to pass the correct subdirectory name
         //the imageService returns the actual created image file - can be used later if required
-        $imageFile = $this->imageService->imageRotate($image, 'img/property-images/', $rotateAmount);
+        $imageFile = $this->imageService->imageRotate($image, 'img/subdirectory/', $rotateAmount);
 
 
 
