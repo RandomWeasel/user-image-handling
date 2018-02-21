@@ -2,7 +2,7 @@
 
     <div v-bind:class="{isPrimary : imageData.is_primary, notShown : ! imageData.is_shown}" class="wrap-image-imageDisplay">
 
-        <div class="image" :style="'background-image: url(/img/property-images/' + imageData.filename + ')' "></div>
+        <div class="image" :style="'background-image: url(/img/property-images/' + versionedImage + ')' "></div>
 
         <div class="block-text">
 
@@ -37,7 +37,8 @@
 
         data(){
             return {
-                imageData: Object.assign({}, this.image)
+                imageData: Object.assign({}, this.image),
+                versionedImage: this.image.filename
             }
         },
 
@@ -59,6 +60,9 @@
                 //but only if it's the same image
                 if(updatedImageData.id == thisVue.imageData.id){
                     thisVue.imageData = Object.assign({}, updatedImageData);
+
+                    thisVue.$set(thisVue, 'versionedImage', thisVue.imgPath());
+                    thisVue.versionedImage = thisVue.imgPath();
                 }
             })
         },
@@ -78,6 +82,14 @@
                 }  else {
                     return '';
                 }
+            }
+        },
+
+        methods: {
+            imgPath: function(){
+                var timestamp = Math.random();
+                console.log(timestamp);
+                return this.imageData.filename + '?v=' + timestamp;
             }
         }
     }
