@@ -167,16 +167,6 @@
 
             }
 
-            //if it was this image which was edited
-            if(updatedImageData.id == thisVue.imageData.id){
-
-                //create a new versioned image to force a reload
-                thisVue.versionedImage = thisVue.makeVersionedImage();
-
-                //remove the rotation value to start fresh
-                thisVue.imageData.rotation = 0;
-            }
-
         });
 
         //set default rotation value to prevent errors
@@ -283,6 +273,14 @@
 
                             //close the modal
                             thisVue.showPopover = false;
+
+
+                            //create a new versioned image to force a reload
+                            thisVue.versionedImage = thisVue.makeVersionedImage();
+
+                            //remove the rotation value to start fresh
+                            thisVue.imageData.rotation = 0;
+
                         } else {
                             //did not save successfully -set the errors data
                             thisVue.errors = json.errors;
