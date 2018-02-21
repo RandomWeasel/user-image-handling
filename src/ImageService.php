@@ -160,4 +160,22 @@ class ImageService
     }
 
 
+    public function imageRotate($image, $imagePath, $rotateAmount){
+
+        if($rotateAmount != 0){
+
+            $imageFilename = $image->filename;
+
+            $imageFile = Image::make($imagePath.$imageFilename);
+            $imageFile->rotate( - $rotateAmount);  //default rotation is opposite direction - so extra '-' to go other way
+
+            $imageFile->save(); //overwrite original
+
+            //returns the actual image object - can be manipulated further if required
+            return $imageFile;
+
+        }
+
+    }
+
 }

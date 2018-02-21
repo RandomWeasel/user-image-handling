@@ -98,8 +98,11 @@ class ExampleController extends Controller
         //#2 - validate here, or in a custom request, if required
 
 
-        //#3 - clean the request as we're using 'update' (ensure fields are fillable)
-        $request = $request->except('_method', '_token');
+        //#3a - get the rotation value for later before we clean the request
+        $rotateAmount = $request->rotation;
+
+        //#3b - clean the request as we're using 'update' (ensure fields are fillable)
+        $request = $request->except('_method', '_token', 'rotation');
 
 
         //#4 - set checkbox defaults (overridden if checked)
@@ -133,7 +136,13 @@ class ExampleController extends Controller
             }
         }
 
-        //#7 - return response to the page - the message is displayed by the image-editor component
+        //#7 - call the imageService to rotate the image file (if required)
+        //the imageService returns the actual created image file - can be used later if required
+        $imageFile = $this->imageService->imageRotate($image, 'img/property-images/', $rotateAmount);
+
+
+
+        //#8 - return response to the page - the message is displayed by the image-editor component
         return response()->json([
             'success' => 'true',
             'message' => 'Image Updated',
