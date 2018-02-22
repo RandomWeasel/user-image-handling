@@ -6,9 +6,15 @@
 
         <div class="block-text">
 
-            <span v-if="imageData.is_primary" class="isPrimary">Main Image</span>
+            <span v-if="imageData.is_primary" class="isPrimary">
+                <span v-html="iconIsPrimary"></span>
+                Main Image
+            </span>
 
-            <span v-if="! imageData.is_shown" class="notShown">Not Displayed</span>
+            <span v-if="! imageData.is_shown" class="notShown">
+                <span v-html="iconIsHidden"></span>
+                Not Displayed
+            </span>
 
             <span v-else></span>
 
@@ -29,6 +35,12 @@
 
 
 <script>
+
+    //import icons
+    import iconIsPrimary from './icons/icon-main-image.js';
+    import iconIsHidden from './icons/icon-hidden.js';
+
+
     export default {
        props: [
             'image',
@@ -38,7 +50,9 @@
         data(){
             return {
                 imageData: Object.assign({}, this.image),
-                versionedImage: this.image.filename //initial value - no version number
+                versionedImage: this.image.filename, //initial value - no version number
+                'iconIsPrimary': iconIsPrimary,
+                'iconIsHidden': iconIsHidden
             }
         },
 

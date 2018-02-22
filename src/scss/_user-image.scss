@@ -49,12 +49,12 @@ $user-image-icon-color-2: lightslategrey !default;
     flex-wrap: wrap;
 
     .isPrimary {
-      @include icon-before('\f005', #ffcc00);
+      //@include icon-before('\f005', #ffcc00);
       display: block;
     }
 
     .notShown {
-      @include icon-before('\f00d', red);
+      //@include icon-before('\f00d', red);
       display: block;
     }
 
@@ -182,6 +182,8 @@ $user-image-icon-color-2: lightslategrey !default;
 }
 
 .image-editor-icon {
+
+  width: 15px;
 
   .color1-stroke,
   .color2-stroke {
