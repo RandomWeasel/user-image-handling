@@ -126,6 +126,16 @@ This package is incomplete
 - Additional classes can be passed to style either or both components if required.  Some basic styles are included.
 - Validation should be carried out in the controller / custom request as normal.  On validation fail, laravel returns a json array of errors, which the editor window will display alongside the appropriate fields.
 
+
+##Image Rotation
+- The `image-editor` component pulls in the `image-rotation` component, but this is also available separately.  
+- The image-rotation component should be passed the database id of the image being editied, eg `<image-rotation :image-id="image.id"></image-rotation>`
+- when a rotation button is clicked, the component emits an event which is collected by the editor and used to transform the image preview.
+- a rotation value is added to the imageData and therefore passed to the controller where it can be used.  See `ExampleController` for a demo - the `ImageService` handles the actual rotation, so this functionality can be called anywhere.
+- When edits are saved, the `image-display` component catches the event emitted from the image-editor.  This triggers a reload from disk of the updated image, so any changes (including rotation and any others which may be enabled in future) are reflected in the displayed image
+- the `image-editor` component also reloads the image from disk and resets the rotation value, so it is 'fresh' when it is next loaded
+- the reload from disk is accomplished by setting the src of the image to a `versionedImage` data object.  This is set to the orignal filename on load, but overwritten by calling the `makeVersionedImage()` function whenever the image should be updated (eg on save of edits).  This function appends a random version number to the end of the filename, causing a reload
+
 -----------------------------------------------------
 
 ##Misc
