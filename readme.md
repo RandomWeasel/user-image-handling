@@ -1,6 +1,13 @@
 This package is incomplete
 
 ##Setup
+- run `composer install serosensa/user-image-handling @dev`
+- run `php artisan vendor:publish --tag=js-assets`
+- add `require('./vendor/serosensa/userImageApp.js')` to the main app.js file before the main vue instance is created but after vue is required
+- run `php artisan vendor:publish --tag=sass-assets` 
+- add `@import "user-image"` in the vendor section of your main scss sheet (after your settings but before any custom styling)
+
+
 
 ###JS files (vue / general frontend)
 - The file `userImageApp.js` registers all vue components provided by the package, 
@@ -8,17 +15,17 @@ This package is incomplete
 - These files should not be directly modified as they will be over-written on package updates.  To force an update, add `--force` to the publish command
 - Require this file in the applications' main app.js `require('./vendor/serosensa/userImageApp.js');` before the main vue instance is created but after vue is required
 
-##Styling
+###Styling
 - include the _user-image.scss sheet in your main sass file.  Include this before your own style sheets so that you can easily override the styling 
 - Publish this file by running `php artisan vendor:publish --tag=sass-assets` - this will export scss files to  `resources/assets/sass/vendor/serosensa`
 
-###Icons
+####Icons
 - All icons in this package have the class `image-editor-icon`
 - Icons can be re-coloured by setting values for `$user-image-icon-color-1` and `$user-image-icon-color-2` - set these values before pulling in the vendor style sheets (eg in settings) to override the defaults.  Some icons will only use color1.
 - You may also override styles by class to style icons in different contexts
 - Icons exist as js files in /vendor/serosensa/icons which are pulled in by each template as required
 
-
+-----------------------------------------------------
 
 ##Image Uploads - via ImageService
 - the ImageService handles all aspects of image file uploads
@@ -87,7 +94,7 @@ This package is incomplete
  - returns an array containing a data array for each image
  - this returned data should then be processed as required by the calling function - for instance, saving the filename to the database
 
-
+-----------------------------------------------------
 
 ##Existing Images - Displaying / Editing
 - see `examples/imageUploadPage.blade.php`` for a full usage example, including all options
@@ -119,6 +126,7 @@ This package is incomplete
 - Additional classes can be passed to style either or both components if required.  Some basic styles are included.
 - Validation should be carried out in the controller / custom request as normal.  On validation fail, laravel returns a json array of errors, which the editor window will display alongside the appropriate fields.
 
+-----------------------------------------------------
 
 ##Misc
 - **Field Errors** - the field-errors component displays all error messages for a given field.  Simply pass in the errors object and the name of the field to display errors for.
@@ -126,6 +134,7 @@ This package is incomplete
 <field-errors :errorObject="errors.is_primary"></field-errors>
 ```
 
+-----------------------------------------------------
     
 ##TODO 
 - Add form / styles package as a dependency (replace existing includes in this package?)
