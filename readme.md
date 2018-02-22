@@ -13,8 +13,10 @@ This package is incomplete
 - Publish this file by running `php artisan vendor:publish --tag=sass-assets` - this will export scss files to  `resources/assets/sass/vendor/serosensa`
 
 ###Icons
+- All icons in this package have the class `image-editor-icon`
 - Icons can be re-coloured by setting values for `$user-image-icon-color-1` and `$user-image-icon-color-2` - set these values before pulling in the vendor style sheets (eg in settings) to override the defaults.  Some icons will only use color1.
-- Icons exist as js files in js/icons which are pulled in by each template as required
+- You may also override styles by class to style icons in different contexts
+- Icons exist as js files in /vendor/serosensa/icons which are pulled in by each template as required
 
 
 
@@ -107,7 +109,7 @@ This package is incomplete
 </image-editor>
 ```
 - Pass in the data for a single image, the url / route the edit form should post to (must be a POST route), and optionally an array of categories.
-- There are a number of slots within this component, all of which are optional.  See the example file for useage examples.  These are:
+- There are a number of slots within this component, all of which are optional.  See the example file for usage examples.  These are:
     - title             -   title for popover
     - categories        -   scoped slot within which category selection inputs can be created (see example).  Requires a category_id field on the image
     - label_is_primary  -   custom label text

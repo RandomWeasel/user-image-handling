@@ -1,6 +1,8 @@
 @import "utilities";
 @import "forms";
 
+
+//colors for icons
 $user-image-icon-color-1: #999ea2 !default;
 $user-image-icon-color-2: lightslategrey !default;
 
@@ -19,7 +21,7 @@ $user-image-icon-color-2: lightslategrey !default;
   }
 
   &.notShown {
-    .image{
+    &>.image{
       opacity: 0.5;
     }
   }
