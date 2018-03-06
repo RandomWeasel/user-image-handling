@@ -1,4 +1,4 @@
-@mixin message($bgcol, $textcol:null) {
+@mixin uImg-message($bgcol, $textcol:null) {
   padding: 4px;
   margin: 10px auto;
   background-color: ($bgcol);
@@ -12,11 +12,11 @@
 }
 
 .message-formError {
-  @include message(#eb8c78);
+  @include uImg-message(#eb8c78);
 }
 
 .message-formSuccess {
-  @include message(#c3e898);
+  @include uImg-message(#c3e898);
 }
 
 

@@ -34,7 +34,7 @@
                 {{-- Use the components within a php/blade foreach loop, passing in data for one image --}}
 
 
-                    <image-display :image="{{$image}}" :categories="{{$propertyImageTypes}}">
+                    <image-display :image="{{$image}}" :categories="{{$propertyImageTypes}}" image-path="/img/property-images/">
 
 
                         {{-- Creates an edit button and pop-over editor --}}

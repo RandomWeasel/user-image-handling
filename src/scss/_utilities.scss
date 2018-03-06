@@ -1,33 +1,33 @@
 //=============== MEDIA QUERIES ==================
 
-$breakpoint-pro: 1000px;
-$breakpoint-tablet: 800px;
-$breakpoint-hybrid: 600px;
-$breakpoint-mobile: 400px;
+$breakpoint-pro: 1000px !default;
+$breakpoint-tablet: 800px !default;
+$breakpoint-hybrid: 600px !default;
+$breakpoint-mobile: 400px !default;
 
 $breakpoint-nav: $breakpoint-pro;
 $breakpoint-logo: $breakpoint-hybrid;
 $breakpoint-content: $content-width-max;
 
-@mixin PRO {
+@mixin uImg-PRO {
   @media screen and (max-width: $breakpoint-pro){
     @content;
   }
 }
 
-@mixin TABLET {
+@mixin uImg-TABLET {
   @media screen and (max-width: $breakpoint-tablet){
     @content;
   }
 }
 
-@mixin HYBRID {
+@mixin uImg-HYBRID {
   @media screen and (max-width: $breakpoint-hybrid){
     @content;
   }
 }
 
-@mixin MOBILE {
+@mixin uImg-MOBILE {
   @media screen and (max-width: $breakpoint-mobile){
     @content;
   }
