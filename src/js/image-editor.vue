@@ -18,7 +18,7 @@
                 <div class="col-half">
                     <div class="popover-image">
 
-                        <div class="image" :style=" 'background-image:url(/img/property-images/' + versionedImage + '); transform: rotate(' +  imageData.rotation + 'deg)' "></div>
+                        <div class="image" :style=" 'background-image:url(' + imagePath + '/' + versionedImage + '); transform: rotate(' +  imageData.rotation + 'deg)' "></div>
 
                         <!--<img :src="'/img/property-images/' + image.filename" alt="" :style="'transform: rotate(' +  imageData.rotation + 'deg)'">-->
 
@@ -188,7 +188,8 @@
     props: [
         'image',
         'categories',
-        'postUrl'
+        'postUrl',
+        'imagePath'
     ],
 
     computed: {

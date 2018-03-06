@@ -2,7 +2,7 @@
 
     <div v-bind:class="{isPrimary : imageData.is_primary, notShown : ! imageData.is_shown}" class="wrap-image-imageDisplay">
 
-        <div class="image" :style="'background-image: url(' + imagePath + versionedImage + ')' "></div>
+        <div class="image" :style="'background-image: url(' + imagePath + '/' + versionedImage + ')' "></div>
 
         <div class="block-text">
 
