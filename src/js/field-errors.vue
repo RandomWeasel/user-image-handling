@@ -19,7 +19,6 @@
         ],
 
         mounted: function(){
-            console.log(this.$parent);
         }
 
     }
