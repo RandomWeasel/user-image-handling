@@ -1,13 +1,15 @@
 
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
+    /**
+     * First we will load all of this project's JavaScript dependencies which
+     * includes Vue and other libraries. It is a great starting point when
+     * building robust, powerful web applications using Vue and Laravel.
+     */
 
 //require('./bootstrap');
 
-require('./interactions');
+    require('./interactions'
+)
+;
 
 //window.Vue = require('vue');
 
@@ -47,11 +49,6 @@ window.bus = new Vue();
 //
 //    }
 //});
-
-
-
-
-
 
 
 ////enable use of promises in older browsers

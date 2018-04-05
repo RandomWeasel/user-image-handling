@@ -1,11 +1,11 @@
 This package is incomplete
 
 ##Setup
-- run `composer install serosensa/user-image-handling @dev`
+- run `composer require serosensa/user-image-handling @dev`
 - run `php artisan vendor:publish --tag=js-assets`
 - add `require('./vendor/serosensa/userImageApp.js')` to the main app.js file before the main vue instance is created but after vue is required
 - run `php artisan vendor:publish --tag=sass-assets` 
-- add `@import "user-image"` in the vendor section of your main scss sheet (after your settings but before any custom styling)
+- add `@import "_3vendor/serosensa/user-image"` in the vendor section of your main scss sheet (after your settings but before any custom styling)
 
 
 
