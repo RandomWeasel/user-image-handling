@@ -19,13 +19,20 @@ class UserImageServiceProvider extends ServiceProvider
 
         //publish assets
         $this->publishes([
-        __DIR__.'/js' => resource_path('assets/js/vendor/serosensa')
-        ], 'js-assets');
+        __DIR__.'/js' => resource_path('assets/js/user-image')
+        ], 'userimage-js-assets');
 
 
         $this->publishes([
-            __DIR__.'/scss' => resource_path('assets/sass/_3vendor/serosensa')
-        ], 'sass-assets');
+            __DIR__.'/scss' => resource_path('assets/sass/user-image')
+        ], 'userimage-sass-assets');
+
+
+        $this->publishes([
+            __DIR__.'/views' => resource_path('resources/views/user-image')
+        ], 'userimage-views');
+
+        //publish the controller too?
 
     }
 

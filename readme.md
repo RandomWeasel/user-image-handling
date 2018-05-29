@@ -2,22 +2,22 @@ This package is incomplete
 
 ##Setup
 - run `composer require serosensa/user-image-handling @dev`
-- run `php artisan vendor:publish --tag=js-assets`
-- add `require('./vendor/serosensa/userImageApp.js')` to the main app.js file before the main vue instance is created but after vue is required
-- run `php artisan vendor:publish --tag=sass-assets` 
+- run `php artisan vendor:publish --tag=userimage-js-assets`
+- add `require('./user-image/userImageApp.js')` to the main app.js file before the main vue instance is created but after vue is required
+- run `php artisan vendor:publish --tag=userimage-sass-assets` 
 - add `@import "_3vendor/serosensa/user-image"` in the vendor section of your main scss sheet (after your settings but before any custom styling)
 
 
 
 ###JS files (vue / general frontend)
 - The file `userImageApp.js` registers all vue components provided by the package, 
-- Export this file by running `php artisan vendor:publish --tag=js-assets` - this will export all js files to `resources/assets/js/vendor/serosensa`.  
+- Export this file by running `php artisan vendor:publish --tag=userimage-js-assets` - this will export all js files to `resources/assets/js/user-image`.  
 - These files should not be directly modified as they will be over-written on package updates.  To force an update, add `--force` to the publish command
-- Require this file in the applications' main app.js `require('./vendor/serosensa/userImageApp.js');` before the main vue instance is created but after vue is required
+- Require this file in the applications' main app.js `require('./user-image/userImageApp.js');` before the main vue instance is created but after vue is required
 
 ###Styling
 - include the _user-image.scss sheet in your main sass file.  Include this before your own style sheets so that you can easily override the styling 
-- Publish this file by running `php artisan vendor:publish --tag=sass-assets` - this will export scss files to  `resources/assets/sass/vendor/serosensa`
+- Publish this file by running `php artisan vendor:publish --tag=userimage-sass-assets` - this will export scss files to  `resources/assets/sass/user-image`
 
 ####Icons
 - All icons in this package have the class `image-editor-icon`
@@ -149,3 +149,12 @@ This package is incomplete
 ##TODO 
 - Add form / styles package as a dependency (replace existing includes in this package?)
 - 
+
+
+
+-----------------------------------------------------
+
+##Useful References
+- Creating a package - https://devdojo.com/blog/tutorials/how-to-create-a-laravel-package
+- Laravel-specific package development, including info on publishing files - https://laravel.com/docs/5.6/packages
+- Developing a package locally - https://johannespichler.com/developing-composer-packages-locally/
