@@ -243,7 +243,7 @@
 
             //post the data
             fetch(thisVue.postUrl, {
-                method: 'put',
+                method: 'post',
                 headers: this.$fetchHeaders,
                 credentials: 'same-origin',
                 body: JSON.stringify(thisVue.imageData) //the array of data to submit
