@@ -42,3 +42,5 @@ function toDate(item){
 
 }
 
+
+export default {promiseStatus, resetSuccess, toDate}

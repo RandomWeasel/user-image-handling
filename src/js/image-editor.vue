@@ -248,7 +248,7 @@
                 credentials: 'same-origin',
                 body: JSON.stringify(thisVue.imageData) //the array of data to submit
 
-            }).then(promiseStatus) //function in interactions.js to check for 404 type errors
+            }).then(utilities.promiseStatus) //function in interactions.js to check for 404 type errors
 
                     .then(function(response){
                         return response.json()
@@ -258,7 +258,7 @@
                             thisVue.success = true;
                             thisVue.statusMessage = json.message;
 
-                            resetSuccess(thisVue, 1000);
+                            utilities.resetSuccess(thisVue, 1000);
 
                             //emit a success event to be caught by a parent
                             bus.$emit(
@@ -289,7 +289,7 @@
                         thisVue.success = 'failed';
                         thisVue.statusMessage = 'Not Saved: ' + error;
 
-                        resetSuccess(thisVue, 2000);
+                        utilities.resetSuccess(thisVue, 2000);
 
                     });
         }

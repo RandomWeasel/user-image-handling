@@ -7,9 +7,7 @@
 
 //require('./bootstrap');
 
-    require('./interactions'
-)
-;
+    window.utilities = require('./utilities');
 
 //window.Vue = require('vue');
 
