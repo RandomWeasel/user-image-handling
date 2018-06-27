@@ -1,6 +1,6 @@
 This package is incomplete
 
-##Setup
+##Installation
 - run `composer require serosensa/user-image-handling @dev`
 - run `php artisan vendor:publish --tag=userimage-js-assets`
 - add `require('./user-image/userImageApp.js')` to the main app.js file before the main vue instance is created but after vue is required
@@ -8,6 +8,64 @@ This package is incomplete
 - add `@import "_3vendor/serosensa/user-image"` in the vendor section of your main scss sheet (after your settings but before any custom styling)
 
 
+##Usage & Functionality
+
+###Upload an Image (Async)
+- Use the `file-upload-fetch` vue component
+    **Props** 
+    - postUrl (optional: default /fetch-file-upload),
+    - fileDest
+    - parentIdentity (array: parent model, id), 
+    - multiple (optional: default false)
+- Displays a file-upload input 
+- Emits an event `file-upload` to event bus with parentIdentity and fileData on successful upload.  Parent can catch and use this data
+- the controller reached by the postUrl 
+
+- Saves the image to the location specified by fileDest prop if the default post controller is used
+
+###Upload an Image (Post)
+- Use a regular file upload field posting to a controller.  The controller 
+
+####Save / Store an Image Record
+- 
+ 
+ `UserImageController@fetchFileUpload` to save the file and return json of file data.  Catch this data in the parent form and create any database records required in this forms controller.  Or, submit to a custom route and save data there
+- If not using the file-upload-fetch component, you can utilise the `imageService->imageUpload($request)` method to rename and resize an uploaded image.  See ImageService section
+- Optionally, use the `imageService->createImageRecord()` method to save a database record of the image
+
+
+###Display / Edit Existing Images
+- Use the `image-display` vue component for each image (eg with v-for)
+    **Props** - image
+- Displays the image and associated data
+    - use slot `info-panel-default` to override default data
+    - use slot `info-panel-extra` to add additional data
+    - also has a default slot outside of the info panel
+    
+- within the image-display component, add the `image-editor` component
+    **Props** - image, postUrl, categories (optional)
+- Allows for:
+    - changing is_shown value
+    - changing is_primary value
+    - updating the caption
+    - rotating the image
+    - setting a category (optional via slot)
+- Displays an edit button, with a modal to edit the image.  Has some default options and a number of slots
+    - slot `title` 
+    - slot `fields-default` displays the default edit fields.  Override this if required.
+    - slot `categories` if a category selector is required.  If used, set `slot-scope="categoriesScope"`
+    - slot `fields-extra` for any additional fields
+    - slot `label_is_primary`
+    - slot `label_is_shown`
+    - slot `label_caption`
+    - slot `subtext_caption`
+
+
+###Routes & Controller Functions
+- Send 
+
+-----------------------------------------------------
+##Fuller details
 
 ###JS files (vue / general frontend)
 - The file `userImageApp.js` registers all vue components provided by the package, 

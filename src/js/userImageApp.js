@@ -22,6 +22,7 @@ Vue.component('image-editor', require('./image-editor.vue'));
 Vue.component('field-errors', require('./field-errors.vue'));
 Vue.component('image-display', require('./image-display.vue'));
 Vue.component('image-rotation', require('./image-rotation.vue'));
+Vue.component('file-upload-fetch', require('./file-upload-fetch.vue'));
 
 ////vue components
 //require('./components/characterLimit.js');

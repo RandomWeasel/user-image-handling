@@ -2,11 +2,12 @@
 
     <div v-bind:class="{isPrimary : imageData.is_primary, notShown : ! imageData.is_shown}" class="wrap-image-imageDisplay">
 
-        <div class="image" :style="'background-image: url(' + imagePath + '/' + versionedImage + ')' "></div>
+        <div class="image" :style="'background-image: url(' + imageData.path + '/' + versionedImage + ')' "></div>
 
         <div class="block-text">
 
-            <span v-if="imageData.is_primary" class="isPrimary">
+            <slot name="info-panel-default">
+               <span v-if="imageData.is_primary" class="isPrimary">
                 <span v-html="iconIsPrimary"></span>
                 Main Image
             </span>
@@ -16,13 +17,17 @@
                 Not Displayed
             </span>
 
-            <span v-else></span>
+                <span v-else></span>
 
             <span v-if="categories" class="category">
                 {{categoryName}}
             </span>
 
-            <span class="caption">{{imageData.caption}}</span>
+                <span class="caption">{{imageData.caption}}</span>
+            </slot>
+
+
+            <slot name="info-panel-extra"></slot>
         </div>
 
         <slot></slot>
@@ -45,7 +50,6 @@
        props: [
             'image',
            'categories',
-           'imagePath'
         ],
 
         data(){

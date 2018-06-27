@@ -14,11 +14,15 @@
 
             <form class="form-commonstyle content">
 
+                <slot name="fields-default">
+
+                </slot>
+
 
                 <div class="col-half">
                     <div class="popover-image">
 
-                        <div class="image" :style=" 'background-image:url(' + imagePath + '/' + versionedImage + '); transform: rotate(' +  imageData.rotation + 'deg)' "></div>
+                        <div class="image" :style=" 'background-image:url(' + image.path + '/' + versionedImage + '); transform: rotate(' +  imageData.rotation + 'deg)' "></div>
 
                         <!--<img :src="'/img/property-images/' + image.filename" alt="" :style="'transform: rotate(' +  imageData.rotation + 'deg)'">-->
 
@@ -34,57 +38,64 @@
 
                 <div class="col-half fields">
 
-                    <slot name="categories" :options="categories" :model="imageData">
+                    <slot name="categories" :categories="categories" :model="imageData">
                     </slot>
 
                     <field-errors :errorObject="errors.category_id"></field-errors>
 
 
-                    <div class="form-row">
+                    <slot name="fields-default">
+                        <div class="form-row">
 
-                        <slot name="label_is_primary">
-                            <label for="is_primary" class="label-long">
-                                Make Primary Image:
-                            </label>
-                        </slot>
+                            <slot name="label_is_primary">
+                                <label for="is_primary" class="label-long">
+                                    Make Primary Image:
+                                </label>
+                            </slot>
 
-                        <input type="checkbox" v-model="imageData.is_primary">
-
-
-                        <field-errors :errorObject="errors.is_primary"></field-errors>
-
-                    </div>
-
-                    <div class="form-row">
-
-                        <slot name="label_is_shown">
-                            <label for="is_shown" class="label-long">
-                                Show this Image:
-                            </label>
-                        </slot>
-
-                        <input type="checkbox" v-model="imageData.is_shown">
-
-                        <field-errors :errorObject="errors.is_shown"></field-errors>
-                    </div>
+                            <input type="checkbox" v-model="imageData.is_primary">
 
 
-                    <div class="form-row">
+                            <field-errors :errorObject="errors.is_primary"></field-errors>
 
-                        <slot name="label_caption">
-                            <label for="caption" class="label-long">
-                                Image Caption:
-                            </label>
-                        </slot>
+                        </div>
 
-                        <textarea name="caption" v-model="imageData.caption"></textarea>
+                        <div class="form-row">
 
-                        <field-errors :errorObject="errors.caption"></field-errors>
+                            <slot name="label_is_shown">
+                                <label for="is_shown" class="label-long">
+                                    Show this Image:
+                                </label>
+                            </slot>
 
-                        <slot name="subtext_caption"></slot>
+                            <input type="checkbox" v-model="imageData.is_shown">
+
+                            <field-errors :errorObject="errors.is_shown"></field-errors>
+                        </div>
 
 
-                    </div>
+                        <div class="form-row">
+
+                            <slot name="label_caption">
+                                <label for="caption" class="label-long">
+                                    Image Caption:
+                                </label>
+                            </slot>
+
+                            <textarea name="caption" v-model="imageData.caption"></textarea>
+
+                            <field-errors :errorObject="errors.caption"></field-errors>
+
+                            <slot name="subtext_caption"></slot>
+
+
+                        </div>
+                    </slot>
+
+
+                    <slot name="fields-extra"></slot>
+
+
                 </div>
 
 
@@ -189,7 +200,6 @@
         'image',
         'categories',
         'postUrl',
-        'imagePath'
     ],
 
     computed: {

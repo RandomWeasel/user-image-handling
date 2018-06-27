@@ -67,9 +67,9 @@
                                 {{-- This example creates radio buttons to select a category from the array passed in earlier --}}
                                 <label for="">Image Type:</label>
 
-                                <span v-for="option in categoriesScope.options">
+                                <span v-for="category in categoriesScope.categories">
                                     <label for="category_id">@{{ option.name }}</label>
-                                    <input type="radio" :value="option.id" v-model="categoriesScope.model.category_id">
+                                    <input type="radio" :value="category.id" v-model="categoriesScope.model.category_id">
                                 </span>
 
 

@@ -21,7 +21,9 @@
 
 
 .form-commonStyle{
-  font-size: 14px;
+  .form-row {
+    font-size: 14px;
+  }
 
   label {
     flex-basis: 20%;

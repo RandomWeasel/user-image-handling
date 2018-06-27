@@ -16,6 +16,7 @@ class UserImageServiceProvider extends ServiceProvider
     public function boot()
     {
         include __DIR__.'/routes.php';
+        include __DIR__.'/models/UploadedImage.php';
 
         //publish assets
         $this->publishes([
@@ -49,6 +50,7 @@ class UserImageServiceProvider extends ServiceProvider
 
 
         $this->app->make('Serosensa\UserImage\ImageService');
+        $this->app->make('Serosensa\UserImage\FileUploadService');
 
         //Load packaged views
         $this->loadViewsFrom(__DIR__.'/views', 'UserImage');

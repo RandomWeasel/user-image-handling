@@ -13,9 +13,10 @@ class UserImageBaseController extends Controller
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    public function __construct(ImageService $imageService){
+    public function __construct(ImageService $imageService, FileUploadService $fileUploadService){
 
         $this->imageService = $imageService;
+        $this->fileUploadService = $fileUploadService;
 
     }
 }

@@ -1,6 +1,8 @@
 <?php
 namespace Serosensa\UserImage;
 
+use Serosensa\UserImage\UploadedImage;
+
 use Carbon\Carbon; //dates and times
 
 use Illuminate\Http\Request;
@@ -125,6 +127,7 @@ class ImageService
                 $imageData['filename'] = $fileName;
                 $imageData['filetype'] = $parts['extension'];
                 $imageData['filesize'] = Storage::disk('public')->size($destinationPath . $fileName);
+                $imageData['path'] = $destinationPath;
 
 //            $imageData['caption'] = '';
 
@@ -156,6 +159,63 @@ class ImageService
             //return the $imageData to be used as required by the calling function
             return($imagesData);
         }
+
+    }
+
+
+    /**
+     * accepts data for a single or multiple images (as array)
+     * returns the saved database record(s) for the image(s)
+     * returns either a single result or an array of results depending on input
+     *
+     * @param $imagesData
+     * @param $parent
+     * @return array
+     */
+    public function saveImageRecords($imagesData, $parent){
+
+        $parentId = $parent->id;
+        $parentModel = get_class($parent);//->getShortName();
+
+        $savedImages = [];
+
+        if(getType($imagesData) == 'array'){
+
+            foreach($imagesData as $imageData){
+                $image = saveRecord($imageData);
+
+                $savedImages[] = $image;
+            }
+
+            return $savedImages;
+
+        } else {
+            $image = saveRecord($imagesData);
+
+            $savedImage = $image;
+
+            return $savedImage;
+        }
+
+
+
+        function saveRecord($imageData) use ($parentModel, $parentId){
+
+            $imageData->parent_model = $parentModel;
+            $imageData->parent_id = $parentId;
+
+            $image = UploadedImage::updateOrCreate($imageData);
+
+//            $image->filename = $imageData['filename'];
+//            $image->filetype = $imageData['filetype'];
+//            $image->filesize = $imageData['filesize'];
+//            $image->path = $imageData['path'];
+//            $image->save();
+
+            return $image;
+        }
+
+
 
     }
 
