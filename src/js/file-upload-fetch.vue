@@ -36,10 +36,10 @@
             default:'/fetch-file-upload',
             type: String
         },
-        fileDest: {
-            default: '/temp-file-upload',
-            type: String
-        },
+//        fileDest: {
+//            default: '/temp-file-upload',
+//            type: String
+//        },
                 'parentIdentity',
                 'multiple'
     },
@@ -59,7 +59,7 @@
             //create data to post
             var fileData = new FormData();
             fileData.append('file', file);
-            fileData.set('file_dest', thisVue.fileDest);
+//            fileData.set('file_dest', thisVue.fileDest);
 
 //            console.log(fileData);
 

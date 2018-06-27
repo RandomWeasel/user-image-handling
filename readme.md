@@ -9,6 +9,10 @@ This package is incomplete
 
 
 ##Usage & Functionality
+Example controller Methods can be found in the ExampleController and copied from here if required
+Uploading an image is considered as a separate step from creating a database record of the image.  Ensure both steps are completed so that images can be retrieved.
+To access methods from eg the ImageService, 
+
 
 ###Upload an Image (Async)
 - Use the `file-upload-fetch` vue component
@@ -18,32 +22,110 @@ This package is incomplete
     - parentIdentity (array: parent model, id), 
     - multiple (optional: default false)
 - Displays a file-upload input 
+- the controller reached by the postUrl should save the image file to storage.  The method `ImageService@fetchImageUpload` does this and returns json.  See _ImageService Methods_
+- Expects to receive json with file data after upload.
+- TODO display the uploaded files in this component, plus existing uploaded files (optional)
 - Emits an event `file-upload` to event bus with parentIdentity and fileData on successful upload.  Parent can catch and use this data
-- the controller reached by the postUrl 
+//TODO Add this data to parent with v-model instead
 
-- Saves the image to the location specified by fileDest prop if the default post controller is used
+
 
 ###Upload an Image (Post)
-- Use a regular file upload field posting to a controller.  The controller 
+- Use a regular file upload field posting to a controller.  
+- The controller may use `ImageService@imageUpload` to rename and resize the file, and `ImageService@saveImageRecords` to create database records in the UploadedImages table  (see _ImageService Methods_)
 
-####Save / Store an Image Record
-- 
- 
- `UserImageController@fetchFileUpload` to save the file and return json of file data.  Catch this data in the parent form and create any database records required in this forms controller.  Or, submit to a custom route and save data there
-- If not using the file-upload-fetch component, you can utilise the `imageService->imageUpload($request)` method to rename and resize an uploaded image.  See ImageService section
-- Optionally, use the `imageService->createImageRecord()` method to save a database record of the image
+
+###Save / Store an Image Record
+- Once an image is uploaded, save a record of it to the relevant database table
+- The data returned from `ImageService@imageUpload` may be used for this
+- A default uploaded_images table is created by this package (see _Image Storage & Retieval_)
+- The `ImageService@saveImageRecords` method can be used to save records to the default table (see _ImageService Methods_)
+- Alternatively, save a record to another table as required
+- Images uploaded via the `file-upload-fetch` component will by default return the image data to the parent form.  Create database records in the controller saving the parent form.  Alternatively, set the file-upload-fetch postUrl to a controller which creates database records directly
+
+
+
+
+###ImageService Methods
+
+####ImageService@imageUpload 
+**params** 
+    - request object 
+    - destination for files
+    - name of field containing images (optional, default: images)
+    - width to downscale image files to (optional, default: 2000px)
+Must be run once per file input field in the form
+Accepts either single or multiple images per file input.
+**Returns** array of file data, even if only 1 file in the field
+
+
+####ImageService@fetchImageUpload
+Uses `ImageService@imageUpload` - same params
+Validates the image(s)
+**Returns** json of file data (TODO handle multiple files per field)
+
+
+####ImageService@saveImageRecords
+Saves image records to the default `UploadedImages` table.  
+**params** 
+    - uploaded image data (single image)
+    - parent model object  (optional, default:null)
+Uploaded images data is expected to contain details such as filename and path.  The data returned from `ImageService@ImageUpload` is suitable
+Accepts an array of images, or a single image 
+TODO does this work?  is testing to see if image data is an array, but won't a single image still be an array?  alt text below
+Accepts the data for a single image - should be run within a foreach loop for processing multiple images 
+If a parent was sent, saves the name of the parent model and the parent Id to the image record.  Else, these are null. 
+**Returns** array of records, or single record
+
+
+
+###Image Storage and Retreival 
+
+####Default UploadedImages table
+Stores a record of image data
+Used by `ImageService@saveImageRecords` 
+Optionally related to a parent model and id - this can be used to retrieve images from the table, eg by calling `UploadedImage::where(parent_model, 'article')` or `UploadedImage::where('parent_model', 'article')->where('parent_id', $parentId)`
+Alternatively, store the `id` from this table in a pivot table to be accessed by any other model as required.
+It is also 
+
+**Required fields** 
+    - filename
+    - path
+**Optional Fields**
+    - filetype
+    - filesize
+    - category_id
+    - caption
+    - is_primary (default:0)
+    - is_shown (default: 1)
+    - parent_model - the name of the model which represents the parent
+    - parent_id - the id of the parent
+
+
+####Default UploadedImages model
+Extend this model to add any additional functionality required - `class MyUploadedImageModel extends Serosensa\UserImage\UploadedImage`.
+Sets dates and guarded on created_at and updated_at fields
+ - methods?
+
 
 
 ###Display / Edit Existing Images
+
+####Image-display Component
 - Use the `image-display` vue component for each image (eg with v-for)
-    **Props** - image
+**Props** - image
 - Displays the image and associated data
     - use slot `info-panel-default` to override default data
     - use slot `info-panel-extra` to add additional data
     - also has a default slot outside of the info panel
     
+    
+####Image-editor Component
 - within the image-display component, add the `image-editor` component
-    **Props** - image, postUrl, categories (optional)
+**Props** 
+    - image, 
+    - postUrl, 
+    - categories (optional)
 - Allows for:
     - changing is_shown value
     - changing is_primary value
@@ -58,11 +140,52 @@ This package is incomplete
     - slot `label_is_primary`
     - slot `label_is_shown`
     - slot `label_caption`
-    - slot `subtext_caption`
+    - slot `subtext_caption` additional text below the caption
+Validation should be carried out in the controller / custom request as normal.  On validation fail, laravel returns a json array of errors, which the editor window will display alongside the appropriate fields.
+
+```
+<image-display :image="{{$image}}" :categories="{{$propertyImageTypes}}" class="">
+
+    <image-editor class="" :image="{{$image}}" post-url="{{route('propertyImageUpdate', $image->id)}}" :categories="{{$propertyImageTypes}}">
+    
+        <div slot="title" class="title">Edit Image</div>
+    
+    </image-editor>
+</image-display>
+```
 
 
-###Routes & Controller Functions
-- Send 
+#####Image Editor Categories
+To display a category selector within the imageEditor:
+- pass an array of categories the `categories` prop on image-editor
+- each category must have at least an id and a name.  The component generates a categoryName using the 'name' field of each category
+- ensure the image has a `category_id` field
+- add `slot-scope="categoriesScope"` to the element utilising the slot, which allows sharing of data between the slot and the parent.
+The example below creates radio buttons to select a category:
+```
+<div slot="categories" slot-scope="categoriesScope" class="form-row">
+                                
+    <label for="">Image Type:</label>
+
+    <span v-for="category in categoriesScope.categories">
+        <label for="category_id">{{ option.name }}</label>
+        <input type="radio" :value="category.id" v-model="categoriesScope.model.category_id">
+    </span>
+
+
+</div>
+```
+
+
+####Field-errors Component
+- use the `field-errors` component alongside any field that may return an error
+- displays all errors for a given field 
+- pass in the errors object and the name of the field to display errors for
+```
+<field-errors :errorObject="errors.is_primary"></field-errors>
+```
+
+
 
 -----------------------------------------------------
 ##Fuller details
@@ -70,7 +193,7 @@ This package is incomplete
 ###JS files (vue / general frontend)
 - The file `userImageApp.js` registers all vue components provided by the package, 
 - Export this file by running `php artisan vendor:publish --tag=userimage-js-assets` - this will export all js files to `resources/assets/js/user-image`.  
-- These files should not be directly modified as they will be over-written on package updates.  To force an update, add `--force` to the publish command
+- WARNING if these files are directly modified as they may be over-written on package updates.  To force an update and overwrite files, add `--force` to the publish command
 - Require this file in the applications' main app.js `require('./user-image/userImageApp.js');` before the main vue instance is created but after vue is required
 
 ###Styling
@@ -83,7 +206,7 @@ This package is incomplete
 - You may also override styles by class to style icons in different contexts
 - Icons exist as js files in /vendor/serosensa/icons which are pulled in by each template as required
 
------------------------------------------------------
+
 
 ##Image Uploads - via ImageService
 - the ImageService handles all aspects of image file uploads
@@ -94,41 +217,21 @@ This package is incomplete
 - destination folders should be .gitignored as they will change on the server independently of source code
 - the imageService saves files to the 'public' disk defined in config/filesystems.  If this is the /app/public folder, files saved here are publicly visible via their url / filename
 
-###Image Upload Pre-made Form
-- This package supplies a form to upload images, use this as is with an include (below) or see the 'Custom Forms' section to create your own forms.
-- `@include('UserImage::_imageUploadForm', ['name' => '', 'label' => '', 'route' => '', 'uploadDir' => '' , 'multiple' => '', 'class' => ''])` 
 
-- The form takes a number of parameters:
 
-    - `name` - the name value of the field (must be unique if there are multiple upload fields per page)
-    - `label` - The label to display alongside the field
-    - `route` - The route the form submits to.  Must be a POST route
-    - `errorBag` - The name of the validation error bag within which the controller will return errors.  Leave empty to use the default bag
-    - `uploadDir` - The directory within public/img which files should be uploaded to.  Must exist prior to file uploads.  To not include first /
-    - `multiple` - true or false, whether multiple files can be uploaded at once
-    - `class` - any class names to attach to the form
-    - `submitButtonText` - Text to display on the submit button.  Leave blank for default
-    - `submitButtonClass` - Class for the submit button.  Leave blank for default
-    
-    
-
-###Image Upload Custom forms
+###Image Upload forms
 - Forms containing file uploads must have `enctype="multipart/form-data` or the parameter files => true (if using LaravelCollective forms)
-- To upload multiple images per field, add `multiple` to the field and `[]` to the field name in the view file
+- To upload multiple images per field, add `multiple` to the field and `[]` to the field name in the view file 
+
 
 
 ####Default Field names - one file upload field only
-- the file upload field must be named `images`
-- a hidden field to set the upload folder (within public/img) must be populated and named `images_dest`
-- call the ImageService and pass the $request to it - eg
-  `$this->imageService->imageUpload($request)`
-
+- by default, the `ImageService@imageUpload` function expects an upload field named `images`.  This default can be used if there is only one upload field in the request, or an alternative name can be used and passed to the service. 
 
 ####Custom Field names - one or more file upload fields
 - the ImageService must be called once PER UPLOAD FIELD
 - the file upload fields must have unique, custom names, eg `thumbnail`
-- a hidden field to set the upload folder (within public/img) must be present for each upload field.  This must be named the same as the related filed upload field, followed by `_dest` - eg `thumbnail_dest`
-- call the ImageService and pass the $request and the custom fieldname to it - eg `$this->imageService->imageUpload($request, 'thumbnail')`
+
 
 
 
@@ -136,10 +239,6 @@ This package is incomplete
 - See the ExampleController in the `/examples` directory for an example controller function
 - The ImageService handles most of the image manipulation - the controller must simply call the ImageService, pass values, and save the resulting data.
 - uploaded files should be validated (to ensure are correct image filetypes) before imageService is called.  This package includes an `IsValidImageRequest` which you may use.  This will return an errorbag `isValidImage` if validation fails.
-- When ImageService is called, pass:
-    - the $request object containing the the uploaded files
-    - The name of the field containing the images.  This is optional and defaults to 'images'
-    - a max width (px) (optional).  If this is not passed, the default is 2000px
 - if imageService is mistakenly called with no files in the request, it will return null rather than generate an error
 - the ImageService always returns a nested array of images data - regardless of number of files uploaded.  Loop this array to extract data for each image.
 
@@ -152,37 +251,9 @@ This package is incomplete
  - returns an array containing a data array for each image
  - this returned data should then be processed as required by the calling function - for instance, saving the filename to the database
 
------------------------------------------------------
 
-##Existing Images - Displaying / Editing
-- see `examples/imageUploadPage.blade.php`` for a full usage example, including all options
-- Display images using the image-display component - use this within a  php foreach loop or v-for of images, passing the data for a single image to the component
-```
-<image-display :image="{{$image}}" :categories="{{$propertyImageTypes}}" class="">
-</image-display>
-```
 
-- This component displays the image, caption, and other details such as if is main image
-- Optionally, pass an array of categories to the component.  A categoryName will be generated using the `name` field of each category and requires a `category_id` field on the image.
-- To allow editing, include the image-editor component between the open/close tags of the image-display component.  This creates an edit button and pop-up editor window
 
-```
-<image-editor class="" :image="{{$image}}" post-url="{{route('propertyImageUpdate', $image->id)}}" :categories="{{$propertyImageTypes}}">
-
-    <div slot="title" class="title">Edit Image</div>
-
-</image-editor>
-```
-- Pass in the data for a single image, the url / route the edit form should post to (must be a POST route), and optionally an array of categories.
-- There are a number of slots within this component, all of which are optional.  See the example file for usage examples.  These are:
-    - title             -   title for popover
-    - categories        -   scoped slot within which category selection inputs can be created (see example).  Requires a category_id field on the image
-    - label_is_primary  -   custom label text
-    - label_is_shown    -   custom label text
-    - subtext_caption   -   additional text below the caption
-- When used as a pair, these two components display a preview of the image with various extra details and an edit button.  When edits are saved, the preview data also updates.
-- Additional classes can be passed to style either or both components if required.  Some basic styles are included.
-- Validation should be carried out in the controller / custom request as normal.  On validation fail, laravel returns a json array of errors, which the editor window will display alongside the appropriate fields.
 
 
 ##Image Rotation
@@ -194,13 +265,7 @@ This package is incomplete
 - the `image-editor` component also reloads the image from disk and resets the rotation value, so it is 'fresh' when it is next loaded
 - the reload from disk is accomplished by setting the src of the image to a `versionedImage` data object.  This is set to the orignal filename on load, but overwritten by calling the `makeVersionedImage()` function whenever the image should be updated (eg on save of edits).  This function appends a random version number to the end of the filename, causing a reload
 
------------------------------------------------------
 
-##Misc
-- **Field Errors** - the field-errors component displays all error messages for a given field.  Simply pass in the errors object and the name of the field to display errors for.
-```
-<field-errors :errorObject="errors.is_primary"></field-errors>
-```
 
 -----------------------------------------------------
     

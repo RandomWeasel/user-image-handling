@@ -28,6 +28,7 @@ class IsValidImageRequest extends FormRequest
     public function rules()
     {
 
+        //TODO this fieldname is passed as a hidden input from the form - can this be accomplished another way and still allow different field names to be validated?
         $fieldName = $this->input('image_fieldname');
 
 //        dd($this->input);

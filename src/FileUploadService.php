@@ -16,12 +16,13 @@ class FileUploadService
         return 'FILE UPLOAD SERVICE';
     }
 
+    //TODO - file upload not fully tested, not necessarily robust, needs improvement and is not properly documented
 
-    public function fileUpload($request){
+
+    public function fileUpload($request, $fileDest){
 
         //process the file - save / rename
 //        dd($request);
-        $fileDest = $request->file_dest;
         $uploadedFile = $request->file('file');
 
 //        dd($uploadedFile); //is a single file, not an array
@@ -58,6 +59,45 @@ class FileUploadService
         $fileData['filetype'] = $parts['extension'];
         $fileData['filesize'] = Storage::disk('public')->size($destinationPath . $fileName);
 
+    }
+
+
+    public function fetchFileUpload($request, $fileDest){
+
+        //TODO  - update to use a custom request rather than validating here
+
+        $rules = [
+            'file' => 'file' //appears to work, even if fails (eg file too large)
+        ];
+
+        $messages = [
+//            'file' => 'The file was not uploaded successfully'
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if($validator->fails()){
+            //explicitly return json
+            return response()->json(['errors' => $validator->errors()]);
+        }
+
+
+        //save and rename the file
+        $fileData = $this->fileUploadService->fileUpload($request, $fileDest);
+
+        //TODO - handle multiple files
+
+
+        return response()->json([
+            'success' => 'true',
+            'message' => "File Uploaded",
+            'fileData' => [
+                'filename' => $fileData['filename'],
+                'filetype' => $fileData['filetype'],
+                'filesize' => $fileData['filesize'],
+                'path' => $fileData['path']
+            ]
+        ]);
     }
 
 

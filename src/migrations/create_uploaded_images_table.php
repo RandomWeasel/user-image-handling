@@ -16,10 +16,9 @@ class CreateUploadedImagesTable extends Migration
         Schema::create('uploaded_images', function (Blueprint $table) {
             $table->increments('id');
             $table->string('parent_model')->nullable();
-            $table->integer('parent_id');
+            $table->integer('parent_id')->nullable();;
             $table->string('filename');
             $table->string('filetype')->nullable();
-            $table->string('filesize')->nullable();
             $table->string('filesize')->nullable();
             $table->string('path');
             $table->integer('category_id')->nullable();

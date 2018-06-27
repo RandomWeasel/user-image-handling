@@ -33,7 +33,9 @@ class UserImageServiceProvider extends ServiceProvider
             __DIR__.'/views' => resource_path('resources/views/user-image')
         ], 'userimage-views');
 
-        //publish the controller too?
+        
+        //TODO publish base controller? or another method to access ImageService
+        //TODO facade to access ImageService?
 
     }
 
@@ -54,6 +56,8 @@ class UserImageServiceProvider extends ServiceProvider
 
         //Load packaged views
         $this->loadViewsFrom(__DIR__.'/views', 'UserImage');
+
+        $this->loadMigrationsFrom(__DIR__.'/migrations'); //docs say to put this in boot
 
 //        $this->app->register('\Intervention\Image');
 //        $loader = \Illuminate\Foundation\AliasLoader::getInstance();
