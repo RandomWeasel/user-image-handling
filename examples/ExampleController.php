@@ -4,6 +4,7 @@ namespace Serosensa\UserImage;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Serosensa\UserImage\Requests\IsValidImageRequest;
 
 class UserImageController extends UserImageBaseController
 {
@@ -41,9 +42,11 @@ class UserImageController extends UserImageBaseController
 //            ]
 //        ]);
 
-        $fileDest = '/img/articles';
+        $fileDest = 'uploads'; //TODO - ensure directory exists and is writable (chmod -R 777)
 
         $uploadedImageJson = $this->imageService->fetchImageUpload($request, $fileDest, 'file', 1000);
+
+//        dd($uploadedImageJson);
 
         return $uploadedImageJson;
 

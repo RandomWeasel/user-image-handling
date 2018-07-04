@@ -33,9 +33,8 @@ class UserImageServiceProvider extends ServiceProvider
             __DIR__.'/views' => resource_path('resources/views/user-image')
         ], 'userimage-views');
 
-        
-        //TODO publish base controller? or another method to access ImageService
-        //TODO facade to access ImageService?
+
+
 
     }
 
@@ -47,8 +46,11 @@ class UserImageServiceProvider extends ServiceProvider
     public function register()
     {
         //register the controllers
+        //TODO add to docs - how to access imageService in __construct
+        //TODO or another method to access ImageService?
+        //TODO facade to access ImageService?
         $this->app->make('Serosensa\UserImage\UserImageBaseController');
-        $this->app->make('Serosensa\UserImage\UserImageController');
+//        $this->app->make('Serosensa\UserImage\UserImageController');
 
 
         $this->app->make('Serosensa\UserImage\ImageService');

@@ -33,23 +33,26 @@
 
     props: {
         postUrl: {
-            default:'/fetch-file-upload',
-            type: String
+            type: String,
+            default: '/fetch-file-upload'
         },
 //        fileDest: {
 //            default: '/temp-file-upload',
 //            type: String
 //        },
-                'parentIdentity',
-                'multiple'
+                parentIdentity: Array,
+                multiple: Boolean
+    },
+
+    mounted: function(){
+        console.log(this.postUrl);
     },
 
     methods: {
-        onFileChange: function(e){
-            var thisVue = this;
+        onFileChange(e) {
 
             //clear any errors
-            thisVue.fileErrors = '';
+            this.fileErrors = '';
 
             //get the file
             var filesArray = e.target.files || e.dataTransfer.files;
@@ -59,12 +62,14 @@
             //create data to post
             var fileData = new FormData();
             fileData.append('file', file);
-//            fileData.set('file_dest', thisVue.fileDest);
+//            fileData.set('file_dest', this.fileDest);
 
 //            console.log(fileData);
 
+            console.log(this.postUrl);
+
             //upload the file
-            fetch(thisVue.postUrl, {
+            fetch(this.postUrl, {
                 method: 'POST',
                 headers: {
 //                    "Content-Type": "multipart/form-data",
@@ -76,38 +81,38 @@
                 body: fileData
             }).then(utilities.promiseStatus)
 
-            .then(function(response){
+            .then((response) => {
 //                console.log('file upload response');
 //                console.log(response);
                 return response.json()
 
-            }).then(function(json){
+            }).then((json) => {
 
 //                        console.log('file upload json');
 //                        console.log(json);
 
                 if(json.success === 'true'){
-                    thisVue.fileData = json.fileData;
+                    this.fileData = json.fileData;
 
-//                    console.log('the file was uploaded to ' + thisVue.parentIdentity);
+//                    console.log('the file was uploaded to ' + this.parentIdentity);
                     //emit an event with the fileData
                     bus.$emit(
-                        "file-upload", ([thisVue.parentIdentity, thisVue.fileData])
+                        "file-upload", ([this.parentIdentity, this.fileData])
                     );
 
                     //display the image
                 } else {
                     //set the errors data
-                    thisVue.fileErrors = json.errors;
+                    this.fileErrors = json.errors;
                 }
 
-            }).catch(function(error){
+            }).catch((error) => {
                 console.log('Request Failed: ' + error);
 
                         var errorMessage = 'Sorry, there was a problem uploading this file - ' + error;
 
-                        thisVue.fileErrors = [];
-                        thisVue.fileErrors.file = [errorMessage] ;
+                        this.fileErrors = [];
+                        this.fileErrors.file = [errorMessage] ;
             });
         }
     }

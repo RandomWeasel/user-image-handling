@@ -11,15 +11,16 @@ This package is incomplete
 ##Usage & Functionality
 Example controller Methods can be found in the ExampleController and copied from here if required
 Uploading an image is considered as a separate step from creating a database record of the image.  Ensure both steps are completed so that images can be retrieved.
-To access methods from eg the ImageService, 
+To access methods from eg the ImageService, extend the UserImageBaseController `class MyImageController extends UserImageBaseController`
 
 
 ###Upload an Image (Async)
+Upload a file and receive json which can be used to request the image from the server
 - Use the `file-upload-fetch` vue component
     **Props** 
-    - postUrl (optional: default /fetch-file-upload),
-    - fileDest
-    - parentIdentity (array: parent model, id), 
+    - postUrl (optional: default /fetch-file-upload)
+    - fileDest - a writeable folder within the public disk 
+    - parentIdentity (array: parent model, id) - used to ensure that the correct vue parent comp catches the event.  Not used in controller 
     - multiple (optional: default false)
 - Displays a file-upload input 
 - the controller reached by the postUrl should save the image file to storage.  The method `ImageService@fetchImageUpload` does this and returns json.  See _ImageService Methods_
@@ -40,6 +41,7 @@ To access methods from eg the ImageService,
 - The data returned from `ImageService@imageUpload` may be used for this
 - A default uploaded_images table is created by this package (see _Image Storage & Retieval_)
 - The `ImageService@saveImageRecords` method can be used to save records to the default table (see _ImageService Methods_)
+- There is also a default model for uploaded images (see _Default UploadedImages Model_)
 - Alternatively, save a record to another table as required
 - Images uploaded via the `file-upload-fetch` component will by default return the image data to the parent form.  Create database records in the controller saving the parent form.  Alternatively, set the file-upload-fetch postUrl to a controller which creates database records directly
 
@@ -56,6 +58,7 @@ To access methods from eg the ImageService,
     - width to downscale image files to (optional, default: 2000px)
 Must be run once per file input field in the form
 Accepts either single or multiple images per file input.
+Does not run validation - validate before calling
 **Returns** array of file data, even if only 1 file in the field
 
 
@@ -218,6 +221,10 @@ The example below creates radio buttons to select a category:
 - the imageService saves files to the 'public' disk defined in config/filesystems.  If this is the /app/public folder, files saved here are publicly visible via their url / filename
 
 
+##File Destinations / Writeable folders
+Folders in which uploaded files are to be saved must be writeable.  To do this, `chmhod -R 777 public/foldername`
+
+
 
 ###Image Upload forms
 - Forms containing file uploads must have `enctype="multipart/form-data` or the parameter files => true (if using LaravelCollective forms)
@@ -238,7 +245,7 @@ The example below creates radio buttons to select a category:
 ###Image Upload in Controller
 - See the ExampleController in the `/examples` directory for an example controller function
 - The ImageService handles most of the image manipulation - the controller must simply call the ImageService, pass values, and save the resulting data.
-- uploaded files should be validated (to ensure are correct image filetypes) before imageService is called.  This package includes an `IsValidImageRequest` which you may use.  This will return an errorbag `isValidImage` if validation fails.
+- uploaded files should be validated (to ensure are correct image filetypes) before imageService@imageUpload is called.  This package includes an `IsValidImageRequest` which you may use.  This will return an errorbag `isValidImage` if validation fails.
 - if imageService is mistakenly called with no files in the request, it will return null rather than generate an error
 - the ImageService always returns a nested array of images data - regardless of number of files uploaded.  Loop this array to extract data for each image.
 
@@ -246,7 +253,7 @@ The example below creates radio buttons to select a category:
 - Once Called, the imageservice:
  - loops each image
  - renames if a file by the same name already exists
- - saves the file to the specified folder
+ - saves the file to the specified folder (after stripping any leading /, as this causes issues with saving the resized file)
  - resizes the file to the specified max width (unless is an svg)
  - returns an array containing a data array for each image
  - this returned data should then be processed as required by the calling function - for instance, saving the filename to the database
@@ -271,7 +278,7 @@ The example below creates radio buttons to select a category:
     
 ##TODO 
 - Add form / styles package as a dependency (replace existing includes in this package?)
-- 
+- IsValidImageRequest not properly tested - fetch file uploads validated in ImageService@fetchFileUpload
 
 
 

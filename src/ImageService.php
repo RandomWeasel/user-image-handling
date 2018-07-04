@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use \Storage;
 use \Session;
 use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Validator;
+
 
 class ImageService
 {
@@ -25,6 +27,8 @@ class ImageService
     public function imageUpload(Request $request, $fileDest, $fieldName = null, $maxWidth = null )
     {
 
+//        dd($fieldName, $request->file()); //works
+
         if( $request->file() == null ){
             //no files in this request - don't process, return null
             return null;
@@ -33,18 +37,26 @@ class ImageService
 
             $destinationFolder = $fileDest;
 
+            //remove any leading / character
+            //as this prevents the resized image from being saved
+            $destinationFolder = ltrim($destinationFolder, "/");
+
+
             //handle a custom field name for the images
             //if not set, then use default
             if( $fieldName != null){
                 $uploadedFiles = $request->file($fieldName);
+
+
 
             } else {
                 $uploadedFiles = $request->file('images');
 
             }
 
+//            dd($uploadedFiles);
 
-            $destinationPath = "img/$destinationFolder/"; // upload path
+            $destinationPath = "$destinationFolder/"; // upload path
 
             //dd($uploadedFiles);
 
@@ -136,6 +148,8 @@ class ImageService
             }
 
 
+//            dd($uploadedFiles);
+
             //process each uploaded file - either single or in a foreach depending on whether a single file or array of files were uploaded
             //either way, the file data ends up in the $imagesData array
             if( getType($uploadedFiles) == 'array'){
@@ -189,7 +203,7 @@ class ImageService
         }
 
         //save, rename and resize the image using the imageService
-        $imagesData = $this->imageService->imageUpload($request, 'file', 1000);
+        $imagesData = $this->imageUpload($request, $fileDest, 'file', 1000);
 
         //TODO handle multiple files per field
 
@@ -223,28 +237,7 @@ class ImageService
         $parentId = $parent->id;
         $parentModel = get_class($parent);//->getShortName();
 
-        $savedImages = [];
-
-        if(getType($imagesData) == 'array'){
-
-            foreach($imagesData as $imageData){
-                $image = saveRecord($imageData);
-
-                $savedImages[] = $image;
-            }
-
-            return $savedImages;
-
-        } else {
-            $image = saveRecord($imagesData);
-
-            $savedImage = $image;
-
-            return $savedImage;
-        }
-
-
-        function saveRecord($imageData) use ($parentModel, $parentId){
+        $saveRecord = function($imageData) use ($parentId, $parentModel){
 
             //only add the parent data if was set - otherwise, leave as-is (or null)
             if($parentModel != null &&  $parentId != null){
@@ -262,7 +255,31 @@ class ImageService
 //            $image->save();
 
             return $image;
+        };
+
+
+        $savedImages = [];
+
+        if(getType($imagesData) == 'array'){
+
+            foreach($imagesData as $imageData){
+                $image = $saveRecord($imageData);
+
+                $savedImages[] = $image;
+            }
+
+            return $savedImages;
+
+        } else {
+            $image = $saveRecord($imagesData);
+
+            $savedImage = $image;
+
+            return $savedImage;
         }
+
+
+
 
 
 
