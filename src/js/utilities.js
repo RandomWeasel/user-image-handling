@@ -14,7 +14,7 @@ function preventAutocomplete(){
 
 //check that a successful response was returned from a promise
 //status 422 is returned by laravel when there are validation errors - so will still need to resolve the promise in order to display the errors
-function promiseStatus(response) {
+let promiseStatus = (response) => {
     if (response.status >= 200 && response.status < 300  || response.status == 422) {
         return Promise.resolve(response)
     } else {
@@ -25,7 +25,7 @@ function promiseStatus(response) {
 
 
 //reset the 'success' message on a vue instance
-function resetSuccess(vue, time){
+let resetSuccess = (vue, time) => {
     setTimeout(function(){
         vue.success = '';
         vue.statusMessage = '';

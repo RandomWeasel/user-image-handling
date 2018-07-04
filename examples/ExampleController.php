@@ -70,6 +70,24 @@ class UserImageController extends UserImageBaseController
     }
 
 
+    /**
+     * image-editor  - save the updates / changes
+     * and return json to the component
+     *
+     * @param $imageId
+     * @param Request $request
+     * @return mixed
+     */
+    public function imageUpdate($imageId, Request $request){
+
+        //get the image from the database
+        $image = UploadedImage::findOrFail($imageId); //TODO use correct model
+
+        $updatedImageJson = $this->imageService->imageEditorSave($image, $request);
+
+        return $updatedImageJson;
+    }
+
 
 
     /**

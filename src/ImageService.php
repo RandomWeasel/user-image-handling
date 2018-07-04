@@ -304,4 +304,72 @@ class ImageService
 
     }
 
+    /**
+     * Handle the submission from the image-editor component
+     *
+     * @param $imageId
+     * @param Request $request
+     * @return mixed
+     */
+    public function imageEditorSave($image, Request $request){
+        //parent refers to the 'owner' of the image(s)
+        //for example, the article to which the images belong
+
+//        #1 - get the image from the database
+//        $image = Image::findOrFail($imageId);
+
+
+        //#2 - get the rotation value for later before we clean the request
+        $rotateAmount = $request->rotation;
+
+        //#3 - clean the request as we're using 'update' (ensure fields are fillable)
+        $request = $request->except('_method', '_token', 'rotation');
+
+
+        //#4 - set checkbox defaults (overridden if checked)
+        //as un-checked checkboxes are missing from the request
+        if (!isset($request['is_primary'])) {
+            $request['is_primary'] = 0;
+        }
+
+        if (!isset($request['is_shown'])) {
+            $request['is_shown'] = 0;
+
+            //if not shown, cannot be primary
+            $request['is_primary'] = 0;
+        }
+
+
+        #5 - update the image in the database
+        $image->update($request);
+
+
+        #6 - update other related images, if required
+
+        //if this image is_primary, remove this from all other images belonging to the parent
+        //the below requires a 'parent' or equivalent method on the image model, and an images method on the parent model
+        if ($request['is_primary'] == 1) {
+            $otherImages = $image->parent->images->except($imageId);
+
+            //TODO if no other images?
+
+            foreach ($otherImages as $anImage) {
+                $anImage->is_primary = 0;
+                $anImage->save();
+            }
+        }
+
+        //#7 - call the imageService to rotate the image file (if required)
+        //the imageService returns the actual created image file - can be used later if required
+        $imageFile = $this->imageRotate($image, $image->path, $rotateAmount);
+
+
+
+        //#8 - return response to the page - the message is displayed by the image-editor component
+        return response()->json([
+            'success' => 'true',
+            'message' => 'Image Updated',
+        ]);
+    }
+
 }

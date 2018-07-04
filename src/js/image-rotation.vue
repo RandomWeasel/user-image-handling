@@ -56,7 +56,7 @@
                 thisVue.rotation = 0;
             }
 
-            console.log(thisVue.rotation);
+//            console.log(thisVue.rotation);
 
             bus.$emit(
                     "rotation", [thisVue.imageId, thisVue.rotation]

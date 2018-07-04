@@ -34,6 +34,8 @@ class UserImageServiceProvider extends ServiceProvider
         ], 'userimage-views');
 
 
+//        $this->loadMigrationsFrom(__DIR__.'/migrations'); //docs say to put this in boot
+
 
 
     }
@@ -59,7 +61,7 @@ class UserImageServiceProvider extends ServiceProvider
         //Load packaged views
         $this->loadViewsFrom(__DIR__.'/views', 'UserImage');
 
-        $this->loadMigrationsFrom(__DIR__.'/migrations'); //docs say to put this in boot
+
 
 //        $this->app->register('\Intervention\Image');
 //        $loader = \Illuminate\Foundation\AliasLoader::getInstance();

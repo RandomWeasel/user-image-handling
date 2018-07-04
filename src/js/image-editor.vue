@@ -22,7 +22,7 @@
                 <div class="col-half">
                     <div class="popover-image">
 
-                        <div class="image" :style=" 'background-image:url(' + image.path + '/' + versionedImage + '); transform: rotate(' +  imageData.rotation + 'deg)' "></div>
+                        <div class="image" :style=" 'background-image:url(' + image.path + versionedImage + '); transform: rotate(' +  imageData.rotation + 'deg)' "></div>
 
                         <!--<img :src="'/img/property-images/' + image.filename" alt="" :style="'transform: rotate(' +  imageData.rotation + 'deg)'">-->
 
@@ -144,7 +144,9 @@
 
 </template>
 
-<script>
+<script type="text/ecmascript-6">
+
+    import utilities from './utilities.js';
 
     export default {
         data()
@@ -160,9 +162,7 @@
         }
     },
 
-    mounted: function() {
-
-        var thisVue = this;
+    mounted() {
 
         //listener for updated image data (when an edit is saved)
         bus.$on('updatedImageData', function(updatedImageData){
@@ -170,8 +170,8 @@
             //if the edited image was set to be the primary image, remove this from all other editors
             if(updatedImageData.is_primary == true){
 
-                if(thisVue.imageData.id != updatedImageData.id){
-                    thisVue.imageData.is_primary = false;
+                if(this.imageData.id != updatedImageData.id){
+                    this.imageData.is_primary = false;
                 }
 
             }
@@ -183,14 +183,14 @@
 
         //listener for rotation data
         //add the rotation value to imageData
-        bus.$on('rotation', function(rotationData){
+        bus.$on('rotation', (rotationData) => {
 
             var imageId = rotationData[0];
             var rotation = rotationData[1];
 
             //check if was this image being rotated
-            if(imageId == thisVue.imageData.id){
-                thisVue.$set(thisVue.imageData, 'rotation', rotation);
+            if(imageId == this.imageData.id){
+                this.$set(this.imageData, 'rotation', rotation);
             }
 
         })
@@ -244,62 +244,62 @@
             return this.imageData.filename + '?v=' + timestamp;
         },
 
-        submitImageEdits: function(){
+        submitImageEdits() {
 //            console.log('submit clicked!');
-            var thisVue = this;
 
             //clear errors
-            thisVue.errors = {};
+            this.errors = {};
 
             //post the data
-            fetch(thisVue.postUrl, {
+            fetch(this.postUrl + '/' +  this.image.id, {
                 method: 'post',
                 headers: this.$fetchHeaders,
                 credentials: 'same-origin',
-                body: JSON.stringify(thisVue.imageData) //the array of data to submit
+                body: JSON.stringify(this.imageData) //the array of data to submit
 
             }).then(utilities.promiseStatus) //function in interactions.js to check for 404 type errors
 
-                    .then(function(response){
+                    .then((response) => {
                         return response.json()
-                    }).then(function(json){
+                    }).then((json) => {
 
                         if(json.success == 'true'){
-                            thisVue.success = true;
-                            thisVue.statusMessage = json.message;
+                            this.success = true;
+                            this.statusMessage = json.message;
 
-                            utilities.resetSuccess(thisVue, 1000);
+
+                            utilities.resetSuccess(this, 1000);
 
                             //emit a success event to be caught by a parent
                             bus.$emit(
-                                    "updatedImageData", thisVue.imageData
+                                    "updatedImageData", this.imageData
                             );
 
                             //close the modal
-                            thisVue.showPopover = false;
+                            this.showPopover = false;
 
 
                             //create a new versioned image to force a reload
-                            thisVue.versionedImage = thisVue.makeVersionedImage();
+                            this.versionedImage = this.makeVersionedImage();
 
                             //remove the rotation value to start fresh
-                            thisVue.imageData.rotation = 0;
+                            this.imageData.rotation = 0;
 
                         } else {
                             //did not save successfully -set the errors data
-                            thisVue.errors = json.errors;
+                            this.errors = json.errors;
                         }
 
 
-                    }).catch(function(error){
+                    }).catch((error) => {
                         //if the promise is rejected, this runs.
                         //Set success = false, show error, etc
                         console.log('Request Failed: ' + error);
 
-                        thisVue.success = 'failed';
-                        thisVue.statusMessage = 'Not Saved: ' + error;
+                        this.success = 'failed';
+                        this.statusMessage = 'Not Saved: ' + error;
 
-                        utilities.resetSuccess(thisVue, 2000);
+                        utilities.resetSuccess(this, 2000);
 
                     });
         }

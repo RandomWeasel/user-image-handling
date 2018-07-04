@@ -69,6 +69,7 @@ Validates the image(s)
 
 
 ####ImageService@saveImageRecords
+//TODO not tested
 Saves image records to the default `UploadedImages` table.  
 **params** 
     - uploaded image data (single image)
@@ -81,10 +82,19 @@ If a parent was sent, saves the name of the parent model and the parent Id to th
 **Returns** array of records, or single record
 
 
+####ImageService@imageEditorSave
+Processes the data sent by the `image-editor` component
+**params**
+    - image instance (retreive the image in the calling controller and pass through)
+    - request object
+**Returns** json of image data to be used by the component
+
+
 
 ###Image Storage and Retreival 
 
 ####Default UploadedImages table
+//TODO - have to manually copy the migration, not working in package
 Stores a record of image data
 Used by `ImageService@saveImageRecords` 
 Optionally related to a parent model and id - this can be used to retrieve images from the table, eg by calling `UploadedImage::where(parent_model, 'article')` or `UploadedImage::where('parent_model', 'article')->where('parent_id', $parentId)`
@@ -127,7 +137,7 @@ Sets dates and guarded on created_at and updated_at fields
 - within the image-display component, add the `image-editor` component
 **Props** 
     - image, 
-    - postUrl, 
+    - postUrl (without image id or '/')
     - categories (optional)
 - Allows for:
     - changing is_shown value
@@ -192,6 +202,7 @@ The example below creates radio buttons to select a category:
 
 -----------------------------------------------------
 ##Fuller details
+//TODO - some of this is superceeded by the above / needs updating
 
 ###JS files (vue / general frontend)
 - The file `userImageApp.js` registers all vue components provided by the package, 
@@ -249,7 +260,7 @@ Folders in which uploaded files are to be saved must be writeable.  To do this, 
 - if imageService is mistakenly called with no files in the request, it will return null rather than generate an error
 - the ImageService always returns a nested array of images data - regardless of number of files uploaded.  Loop this array to extract data for each image.
 
-####ImageService Functionality
+####ImageService@imageUpload Functionality
 - Once Called, the imageservice:
  - loops each image
  - renames if a file by the same name already exists
