@@ -211,3 +211,30 @@ $user-image-icon-color-2: lightslategrey !default;
     fill: $user-image-icon-color-2;
   }
 }
+
+
+//'namespacing' for scss
+//all components to use the class user-image on their root elem
+//can then be easily over-ridden (?) by specifying a class on each instance
+
+.user-image {
+  $margin-standard: 7px;
+
+  .preview-uploaded-image {
+    width: 58%;
+    padding-top: 40%;
+    margin-top: $margin-standard;
+    margin-bottom: $margin-standard;
+    //border: 1px solid yellow;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .preview-uploaded-file {
+    margin-top: $margin-standard;
+    margin-bottom: $margin-standard;
+    font-size: 0.9rem;
+  }
+}
+

@@ -1,6 +1,6 @@
 <template>
 
-    <div>
+    <div class="user-image">
         <slot name="before-input"></slot>
 
 
@@ -10,6 +10,13 @@
 
 
         <slot name="after-input"></slot>
+
+        <div v-if="fileIsImage" class="preview-uploaded-image" :style="'background-image: url(/' + fileData.path + fileData.filename + ')'">
+        </div>
+
+        <div v-if="fileIsDocument" class="preview-uploaded-file">
+            <a :href="'/' + fileData.path + fileData.filename" target="_blank">{{fileData.filename}}</a>
+        </div>
 
         <field-errors :errorObject="fileErrors.file"></field-errors>
 
@@ -28,8 +35,7 @@
             fileData: '',
             fileErrors: '',
         }
-    }
-    ,
+    },
 
     props: {
         postUrl: {
@@ -46,6 +52,34 @@
 
     mounted: function(){
         console.log(this.postUrl);
+    },
+
+    computed: {
+        fileIsImage(){
+
+            if(this.fileData.filetype){
+                let fileType = this.fileData.filetype.toLowerCase();
+
+                let imageTypes = ['jpg', 'jpeg', 'png', 'gif' , 'bmp' , 'jpeg', 'svg'];
+
+                if(imageTypes.includes(fileType)){
+                    return true;
+                }
+            }
+
+        },
+
+        fileIsDocument(){
+            if(this.fileData.filetype){
+                let fileType = this.fileData.filetype.toLowerCase();
+
+                let documentTypes = ['pdf', 'doc', 'docx', 'pages'];
+
+                if(documentTypes.includes(fileType)){
+                    return true;
+                }
+            }
+        }
     },
 
     methods: {
