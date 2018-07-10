@@ -5,7 +5,7 @@ This package is incomplete
 - run `php artisan vendor:publish --tag=userimage-js-assets`
 - add `require('./user-image/userImageApp.js')` to the main app.js file before the main vue instance is created but after vue is required
 - run `php artisan vendor:publish --tag=userimage-sass-assets` 
-- add `@import "_3vendor/serosensa/user-image"` in the vendor section of your main scss sheet (after your settings but before any custom styling)
+- add `@import "user-image/user-image"` in the vendor section of your main scss sheet (after your settings but before any custom styling)
 
 
 ##Usage & Functionality

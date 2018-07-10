@@ -234,16 +234,27 @@ class ImageService
     public function saveImageRecords($imagesData, $parent = null){
         //TODO - accept a $model var for own model, and save to a different table based on this
 
-        $parentId = $parent->id;
-        $parentModel = get_class($parent);//->getShortName();
 
+        //only get parent info if parent was passed
+        if($parent){
+            $parentId = $parent->id;
+            $parentModel = get_class($parent);//->getShortName();
+        } else {
+            $parentId = null;
+            $parentModel = null;
+        }
+
+
+        /**
+         * @param $imageData (array)
+         * @return mixed
+         */
         $saveRecord = function($imageData) use ($parentId, $parentModel){
 
             //only add the parent data if was set - otherwise, leave as-is (or null)
-            if($parentModel != null &&  $parentId != null){
-                $imageData->parent_model = $parentModel;
-                $imageData->parent_id = $parentId;
-
+            if($parentModel && $parentId){
+                $imageData['parent_model'] = $parentModel;
+                $imageData['parent_id'] = $parentId;
             }
 
             $image = UploadedImage::updateOrCreate($imageData);
@@ -260,23 +271,27 @@ class ImageService
 
         $savedImages = [];
 
-        if(getType($imagesData) == 'array'){
+        //TODO - the below was to handle processing multiple images
+        //but a single image will be an array, so this won't work
+        //need to detect if single or multiple by a different means
 
-            foreach($imagesData as $imageData){
-                $image = $saveRecord($imageData);
-
-                $savedImages[] = $image;
-            }
-
-            return $savedImages;
-
-        } else {
+//        if(getType($imagesData) == 'array'){
+//
+//            foreach($imagesData as $imageData){
+//                $image = $saveRecord($imageData);
+//
+//                $savedImages[] = $image;
+//            }
+//
+//            return $savedImages;
+//
+//        } else {
             $image = $saveRecord($imagesData);
 
             $savedImage = $image;
 
             return $savedImage;
-        }
+//        }
 
 
 

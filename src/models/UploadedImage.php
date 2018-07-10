@@ -4,7 +4,7 @@ namespace Serosensa\UserImage;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PropertyImage extends Model
+class UploadedImage extends Model
 {
     //
 

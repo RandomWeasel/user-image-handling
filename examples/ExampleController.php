@@ -53,7 +53,26 @@ class UserImageController extends UserImageBaseController
     }
 
 
-    /**
+
+    public function fetchImageUploadAndRecord(Request $request){
+        $fileDest = 'uploads';
+
+        //upload the file
+        $uploadedImageJson = $this->imageService->fetchImageUpload($request, $fileDest, 'file', 1000);
+
+        //get the image data out of the json returned above (as an array)
+        //TODO - this only handles a single file upload
+        $fileData = json_decode($uploadedImageJson->content(), true);
+        $fileData = $fileData['fileData'];
+
+        //save a record
+        $records = $this->imageService->saveImageRecords($fileData);
+
+        return $uploadedImageJson;
+
+
+
+        /**
      * Ajax file upload example
      * based on the image upload
      * Use with caution - more work is needed (see fileUploadService)
