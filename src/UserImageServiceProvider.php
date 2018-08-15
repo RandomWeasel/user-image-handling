@@ -4,8 +4,6 @@ namespace Serosensa\UserImage;
 
 use Illuminate\Support\ServiceProvider;
 
-use Intervention\Image;
-
 class UserImageServiceProvider extends ServiceProvider
 {
     /**
@@ -15,29 +13,20 @@ class UserImageServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        include __DIR__.'/routes.php';
-        include __DIR__.'/models/UploadedImage.php';
+        include __DIR__ . '/routes.php';
 
-        //publish assets
+        // Publish assets
         $this->publishes([
-        __DIR__.'/js' => resource_path('assets/js/user-image')
+            __DIR__ . '/js' => resource_path('assets/js/user-image')
         ], 'userimage-js-assets');
 
-
         $this->publishes([
-            __DIR__.'/scss' => resource_path('assets/sass/user-image')
+            __DIR__ . '/scss' => resource_path('assets/sass/user-image')
         ], 'userimage-sass-assets');
 
-
         $this->publishes([
-            __DIR__.'/views' => resource_path('resources/views/user-image')
+            __DIR__ . '/views' => resource_path('resources/views/user-image')
         ], 'userimage-views');
-
-
-//        $this->loadMigrationsFrom(__DIR__.'/migrations'); //docs say to put this in boot
-
-
-
     }
 
     /**
@@ -47,26 +36,16 @@ class UserImageServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //register the controllers
-        //TODO add to docs - how to access imageService in __construct
-        //TODO or another method to access ImageService?
-        //TODO facade to access ImageService?
-        $this->app->make('Serosensa\UserImage\UserImageBaseController');
-//        $this->app->make('Serosensa\UserImage\UserImageController');
+        // Register the controllers
 
+        // @TODO add to docs - how to access imageService in __construct
+        // @TODO or another method to access ImageService?
+        // @TODO facade to access ImageService?
 
-        $this->app->make('Serosensa\UserImage\ImageService');
-        $this->app->make('Serosensa\UserImage\FileUploadService');
+        $this->app->singleton(ImageService::class);
+        $this->app->singleton(FileUploadService::class);
 
         //Load packaged views
-        $this->loadViewsFrom(__DIR__.'/views', 'UserImage');
-
-
-
-//        $this->app->register('\Intervention\Image');
-//        $loader = \Illuminate\Foundation\AliasLoader::getInstance();
-//        $loader->alias('Image', 'Intervention\Image\Facades\Image');
-
-
+        $this->loadViewsFrom(__DIR__ . '/views', 'UserImage');
     }
 }

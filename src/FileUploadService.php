@@ -1,45 +1,44 @@
 <?php
+
 namespace Serosensa\UserImage;
 
-use Carbon\Carbon; //dates and times
-
+use Session;
+use Storage;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-//use Intervention\Image\Image;
-use \Storage;
-use \Session;
-use Intervention\Image\Facades\Image;
 
 class FileUploadService
 {
-
-    public function test(){
+    public function test()
+    {
         return 'FILE UPLOAD SERVICE';
     }
 
     //TODO - file upload not fully tested, not necessarily robust, needs improvement and is not properly documented
 
-
-    public function fileUpload($request, $fileDest){
-
+    /**
+     * Upload a file.
+     *
+     * @param $request
+     * @param string $fileDestination
+     * @return array
+     */
+    public function fileUpload($request, $fileDestination)
+    {
         //process the file - save / rename
-//        dd($request);
         $uploadedFile = $request->file('file');
 
-//        dd($uploadedFile); //is a single file, not an array
-
-        $destinationPath = "$fileDest/"; // upload path (within public)
-
+        $destinationPath = "$fileDestination/"; // upload path (within public)
 
         $uploadedFileName = $uploadedFile->getClientOriginalName();
 
-        // ensure a safe filename
+        // Ensure a safe filename
         $fileName = preg_replace("/[^A-Z0-9._-]/i", "_", $uploadedFileName);
 
-        //check if a file with that name already exists
-        //if so, modify the name before uploading
+        // Check if a file with that name already exists
+        // If so, modify the name before uploading
         $i = 0;
         $parts = pathinfo($fileName); //break filename into array of consitutent parts
-
 
         while (Storage::disk('public')->exists($destinationPath . $fileName)) {
             $i++; //increment value of $i
@@ -59,15 +58,22 @@ class FileUploadService
         $fileData['filetype'] = $parts['extension'];
         $fileData['filesize'] = Storage::disk('public')->size($destinationPath . $fileName);
 
+        return $fileData;
     }
 
-
-    public function fetchFileUpload($request, $fileDest){
-
+    /**
+     * Upload a file, via "fetch"
+     *
+     * @param $request
+     * @param $fileDestination
+     * @return mixed
+     */
+    public function fetchFileUpload($request, $fileDestination)
+    {
         //TODO  - update to use a custom request rather than validating here
 
         $rules = [
-            'file' => 'file' //appears to work, even if fails (eg file too large)
+            'file' => 'file' // Appears to work, even if fails (eg file too large)
         ];
 
         $messages = [
@@ -76,17 +82,15 @@ class FileUploadService
 
         $validator = Validator::make($request->all(), $rules, $messages);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             //explicitly return json
             return response()->json(['errors' => $validator->errors()]);
         }
 
-
-        //save and rename the file
-        $fileData = $this->fileUploadService->fileUpload($request, $fileDest);
+        // Save and rename the file
+        $fileData = $this->fileUpload($request, $fileDestination);
 
         //TODO - handle multiple files
-
 
         return response()->json([
             'success' => 'true',
@@ -99,9 +103,4 @@ class FileUploadService
             ]
         ]);
     }
-
-
-
-
-
 }

@@ -1,22 +1,27 @@
 <?php
+
 namespace Serosensa\UserImage;
 
-use Serosensa\UserImage\UploadedImage;
-
-use Carbon\Carbon; //dates and times
-
+use Session;
+use Storage;
 use Illuminate\Http\Request;
-//use Intervention\Image\Image;
-use \Storage;
-use \Session;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Validator;
+use Serosensa\UserImage\Models\UploadedImage;
 
-
+/**
+ * Class ImageService
+ *
+ * Handles all aspects of image upload processing.
+ *
+ * @see http://image.intervention.io/
+ *
+ * @package Serosensa\UserImage
+ */
 class ImageService
 {
-
-    public function test(){
+    public function test()
+    {
         return 'IMAGE SERVICE';
     }
 
@@ -24,75 +29,57 @@ class ImageService
     //pass the $request through to this function
     //optionally, pass a field name to fetch images from - if none, images is used
     //optionally, pass a max width (px) for the uploaded files to be resized to
-    public function imageUpload(Request $request, $fileDest, $fieldName = null, $maxWidth = null )
+    public function imageUpload(Request $request, $fileDest, $fieldName = null, $maxWidth = null)
     {
-
-//        dd($fieldName, $request->file()); //works
-
-        if( $request->file() == null ){
-            //no files in this request - don't process, return null
+        if (is_null($request->file())) {
+            // N files in this request - don't process, return null
             return null;
 
         } else {
-
             $destinationFolder = $fileDest;
 
             //remove any leading / character
             //as this prevents the resized image from being saved
             $destinationFolder = ltrim($destinationFolder, "/");
 
-
-            //handle a custom field name for the images
+            // Handle a custom field name for the images
             //if not set, then use default
-            if( $fieldName != null){
+            if ($fieldName != null) {
                 $uploadedFiles = $request->file($fieldName);
-
-
 
             } else {
                 $uploadedFiles = $request->file('images');
-
             }
-
-//            dd($uploadedFiles);
 
             $destinationPath = "$destinationFolder/"; // upload path
 
-            //dd($uploadedFiles);
-
-            //create a variable to hold the returned image data
+            // Create a variable to hold the returned image data
             $imagesData = [];
 
-
-            //set a default maxWidth if one was not passed
-            if($maxWidth == null ){
+            // Set a default maxWidth if one was not passed
+            if ($maxWidth == null) {
                 $maxWidth = 2000;
             }
 
-
-            //create as seperate function to allow uploads of single or multiple files to be handled in the same function
-            //then push the result into the $imagesData array
-            function processFile($uploadedFile, $destinationPath, $maxWidth){
-
-                //$uploadedFile = $request->file('image');
+            // Create as seperate function to allow uploads of single or multiple files to be handled in the same function
+            // then push the result into the $imagesData array
+            function processFile($uploadedFile, $destinationPath, $maxWidth)
+            {
 
                 $uploadedFileName = $uploadedFile->getClientOriginalName();
-
 
                 // ensure a safe filename
                 $fileName = preg_replace("/[^A-Z0-9._-]/i", "_", $uploadedFileName);
 
-                //check if a file with that name already exists
-                //if so, modify the name before uploading
+                // Check if a file with that name already exists
+                // if so, modify the name before uploading
                 $i = 0;
                 $parts = pathinfo($fileName); //break filename into array of consitutent parts
-
 
                 while (Storage::disk('public')->exists($destinationPath . $fileName)) {
                     $i++; //increment value of $i
                     $fileName = $parts["filename"] . "-" . $i . "." . $parts["extension"]; //add the new value of $i to the filename, before the . extension
                 }
-
 
                 //save the file to the correct location
                 Storage::disk('public')->put(
@@ -100,28 +87,21 @@ class ImageService
                     file_get_contents($uploadedFile->getRealPath())
                 );
 
-
-
                 $storedFile = Storage::disk('public')->get($destinationPath . $fileName);
-
-
-                //image handling uses http://image.intervention.io/
 
                 //resize and re-save the file
                 //don't resize if is an svg as will error / not necessary
-                if( $parts['extension'] != 'svg' ) {
-
-
+                if ($parts['extension'] !== 'svg') {
 
 //                    $intervention = new \Intervention\Image\Image;
 //                    dd($intervention);
                     Image::make($storedFile)
 //                ->orientate() //not sure if working - orient according to camera data
-                        ->resize($maxWidth, null, function ($constraint){ //resize width
+                        ->resize($maxWidth, null, function ($constraint) { //resize width
                             $constraint->aspectRatio(); //maintain aspect ratio
                             $constraint->upsize(); //prevent upsizing
                         })->save($destinationPath . $fileName);
-                }  else {
+                } else {
 
 //                //cannot save using Image if is an svg - so use Storage method
 //                $uploadedFile->move($destinationPath, $fileName);
@@ -130,30 +110,19 @@ class ImageService
 
                 }
 
-
                 $imageData = [];
                 $imageData['filename'] = $fileName;
                 $imageData['filetype'] = $parts['extension'];
                 $imageData['filesize'] = Storage::disk('public')->size($destinationPath . $fileName);
                 $imageData['path'] = $destinationPath;
 
-//            $imageData['caption'] = '';
-
-//            dd(Storage::files($destinationPath));
-
-
-//            dd($imageData);
                 return $imageData;
-
             }
-
-
-//            dd($uploadedFiles);
 
             //process each uploaded file - either single or in a foreach depending on whether a single file or array of files were uploaded
             //either way, the file data ends up in the $imagesData array
-            if( getType($uploadedFiles) == 'array'){
-                foreach( $uploadedFiles as $uploadedFile){
+            if (getType($uploadedFiles) == 'array') {
+                foreach ($uploadedFiles as $uploadedFile) {
                     $imageData = processFile($uploadedFile, $destinationPath, $maxWidth);
 
                     $imagesData[] = $imageData;
@@ -164,14 +133,9 @@ class ImageService
                 $imagesData[] = $imageData;
             }
 
-
-
-            //return the $imageData to be used as required by the calling function
-            return($imagesData);
+            return ($imagesData);
         }
-
     }
-
 
     /**
      * upload images with ajax / fetch
@@ -183,7 +147,8 @@ class ImageService
      * @param null $maxWidth
      * @return mixed
      */
-    public function fetchImageUpload(Request $request, $fileDest, $fieldName = null, $maxWidth = null){
+    public function fetchImageUpload(Request $request, $fileDest, $fieldName = null, $maxWidth = null)
+    {
 
         //TODO use proper Request for validation
         //validate
@@ -197,7 +162,7 @@ class ImageService
 //
         $validator = Validator::make($request->all(), $rules, $messages);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             //explicitly return json
             return response()->json(['errors' => $validator->errors()]);
         }
@@ -217,9 +182,6 @@ class ImageService
                 'path' => $imagesData[0]['path'],
             ]
         ]);
-
-
-
     }
 
     /**
@@ -231,12 +193,13 @@ class ImageService
      * @param $parent
      * @return array
      */
-    public function saveImageRecords($imagesData, $parent = null){
+    public function saveImageRecords($imagesData, $parent = null)
+    {
         //TODO - accept a $model var for own model, and save to a different table based on this
 
 
         //only get parent info if parent was passed
-        if($parent){
+        if ($parent) {
             $parentId = $parent->id;
             $parentModel = get_class($parent);//->getShortName();
         } else {
@@ -249,10 +212,10 @@ class ImageService
          * @param $imageData (array)
          * @return mixed
          */
-        $saveRecord = function($imageData) use ($parentId, $parentModel){
+        $saveRecord = function ($imageData) use ($parentId, $parentModel) {
 
             //only add the parent data if was set - otherwise, leave as-is (or null)
-            if($parentModel && $parentId){
+            if ($parentModel && $parentId) {
                 $imageData['parent_model'] = $parentModel;
                 $imageData['parent_id'] = $parentId;
             }
@@ -286,29 +249,26 @@ class ImageService
 //            return $savedImages;
 //
 //        } else {
-            $image = $saveRecord($imagesData);
+        $image = $saveRecord($imagesData);
 
-            $savedImage = $image;
+        $savedImage = $image;
 
-            return $savedImage;
+        return $savedImage;
 //        }
-
-
-
-
 
 
     }
 
 
-    public function imageRotate($image, $imagePath, $rotateAmount){
+    public function imageRotate($image, $imagePath, $rotateAmount)
+    {
 
-        if($rotateAmount != 0){
+        if ($rotateAmount != 0) {
 
             $imageFilename = $image->filename;
 
-            $imageFile = Image::make($imagePath.$imageFilename);
-            $imageFile->rotate( - $rotateAmount);  //default rotation is opposite direction - so extra '-' to go other way
+            $imageFile = Image::make($imagePath . $imageFilename);
+            $imageFile->rotate(-$rotateAmount);  //default rotation is opposite direction - so extra '-' to go other way
 
             $imageFile->save(); //overwrite original
 
@@ -326,7 +286,8 @@ class ImageService
      * @param Request $request
      * @return mixed
      */
-    public function imageEditorSave($image, Request $request){
+    public function imageEditorSave($image, Request $request)
+    {
         //parent refers to the 'owner' of the image(s)
         //for example, the article to which the images belong
 
@@ -377,7 +338,6 @@ class ImageService
         //#7 - call the imageService to rotate the image file (if required)
         //the imageService returns the actual created image file - can be used later if required
         $imageFile = $this->imageRotate($image, $image->path, $rotateAmount);
-
 
 
         //#8 - return response to the page - the message is displayed by the image-editor component
