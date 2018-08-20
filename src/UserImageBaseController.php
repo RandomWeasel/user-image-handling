@@ -2,21 +2,27 @@
 
 namespace Serosensa\UserImage;
 
-use App\Http\Controllers\Controller;
-
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-class UserImageBaseController extends Controller
+class UserImageBaseController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    public function __construct(ImageService $imageService, FileUploadService $fileUploadService){
+    /**
+     * @var ImageService $imageService
+     */
+    public $imageService;
 
+    /**
+     * @var FileUploadService $fileUploadService
+     */
+    public $fileUploadService;
+
+    public function __construct(ImageService $imageService, FileUploadService $fileUploadService){
         $this->imageService = $imageService;
         $this->fileUploadService = $fileUploadService;
-
     }
 }
