@@ -40,14 +40,19 @@
     props: {
         postUrl: {
             type: String,
-            default: '/fetch-file-upload'
+            default: '/fetch-image-upload'
         },
 //        fileDest: {
 //            default: '/temp-file-upload',
 //            type: String
 //        },
-                parentIdentity: Array,
-                multiple: Boolean
+//        parentIdentity:{
+//            type: Array,
+//        },
+        multiple: {
+            type: Boolean,
+            default: false,
+        }
     },
 
     mounted: function(){
@@ -130,8 +135,8 @@
 
 //                    console.log('the file was uploaded to ' + this.parentIdentity);
                     //emit an event with the fileData
-                    bus.$emit(
-                        "file-upload", ([this.parentIdentity, this.fileData])
+                    this.$parent.$emit(
+                        "file-upload", (this.fileData)
                     );
 
                     //display the image

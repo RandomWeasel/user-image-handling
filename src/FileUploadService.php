@@ -6,6 +6,7 @@ use Session;
 use Storage;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class FileUploadService
 {

@@ -42,7 +42,7 @@ class UserImageController extends UserImageBaseController
 //            ]
 //        ]);
 
-        $fileDest = 'uploads'; //TODO - ensure directory exists and is writable (chmod -R 777)
+        $fileDest = 'uploads'; //TODO - ensure directory exists and is writable (chmod -R 777).  Also add contents to gitignore eg public/uploads/*
 
         $uploadedImageJson = $this->imageService->fetchImageUpload($request, $fileDest, 'file', 1000);
 
