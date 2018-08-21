@@ -53,6 +53,19 @@ class UserImageController extends UserImageBaseController
     }
 
 
+    public function fetchVideoUpload(Request $request){
+
+        $fileDest = 'uploads'; //TODO - ensure directory exists and is writable (chmod -R 777).  Also add contents to gitignore eg public/uploads/*
+
+        $uploadedVideoJson = $this->imageService->fetchVideoUpload($request, $fileDest, 'file');
+
+//        dd($uploadedVideoJson);
+
+        return $uploadedVideoJson;
+
+    }
+
+
 
     public function fetchImageUploadAndRecord(Request $request)
     {
@@ -79,6 +92,7 @@ class UserImageController extends UserImageBaseController
      * Ajax file upload example
      * based on the image upload
      * Use with caution - more work is needed (see fileUploadService)
+     *  Likely to be replaced with functionality from ImageService@fileUpload
      *
      * @param Request $request
      * @return mixed
@@ -90,6 +104,9 @@ class UserImageController extends UserImageBaseController
         return $uploadedFileJson;
 
     }
+
+
+    //=======================================
 
 
     /**
@@ -131,7 +148,7 @@ class UserImageController extends UserImageBaseController
 
         //#2 - imageService renames, resizes, etc the images
         //See readme for details
-        $imagesData = $this->imageService->imageUpload($request, $fileDest, 'images', 1000);
+        $imagesData = $this->imageService->fileUpload($request, $fileDest, 'images', 1000);
 
         //#3 - imageService returns an array of images (regardless of whether one or many images uploaded)
         //dd($imagesData);

@@ -40,7 +40,7 @@ class ExampleController extends Controller
 
         //#2 - imageService renames, resizes, etc the images
         //See readme for details
-        $imagesData = $this->imageService->imageUpload($request, 'images', 1000);
+        $imagesData = $this->imageService->fileUpload($request, 'images', 1000);
 
         //#3 - imageService returns an array of images (regardless of whether one or many images uploaded)
         //dd($imagesData);

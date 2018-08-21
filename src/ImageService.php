@@ -25,11 +25,90 @@ class ImageService
         return 'IMAGE SERVICE';
     }
 
-    //upload, save, rename and resize images
-    //pass the $request through to this function
-    //optionally, pass a field name to fetch images from - if none, images is used
-    //optionally, pass a max width (px) for the uploaded files to be resized to
-    public function imageUpload(Request $request, $fileDest, $fieldName = null, $maxWidth = null)
+
+    /*
+     * Save an uploaded file to disk
+     * Rename to avoid overwrites and return filename and stored file
+     * @params $uploadedFile
+     * @param $destinationPath
+     */
+    public function saveFileToDisk($uploadedFile, $destinationPath){
+
+        $uploadedFileName = $uploadedFile->getClientOriginalName();
+
+        // ensure a safe filename
+        $fileName = preg_replace("/[^A-Z0-9._-]/i", "_", $uploadedFileName);
+
+        // Check if a file with that name already exists
+        // if so, modify the name before uploading
+        $i = 0;
+        $parts = pathinfo($fileName); //break filename into array of consitutent parts
+
+        while (Storage::disk('public')->exists($destinationPath . $fileName)) {
+            $i++; //increment value of $i
+            $fileName = $parts["filename"] . "-" . $i . "." . $parts["extension"]; //add the new value of $i to the filename, before the . extension
+        }
+
+        //save the file to the correct location
+        Storage::disk('public')->put(
+            $destinationPath . $fileName, //set the path and desired filename
+            file_get_contents($uploadedFile->getRealPath())
+        );
+
+        $storedFile = Storage::disk('public')->get($destinationPath . $fileName);
+
+        return [$fileName, $storedFile];
+    }
+
+    /*
+     * Save an image file to disk and resize
+     * Utilises saveFileToDisk
+     */
+    public function saveImageToDiskAndResize($uploadedFile, $destinationPath, $maxWidth){
+
+        list($fileName, $storedFile) = $this->saveFileToDisk($uploadedFile, $destinationPath);
+
+        $parts = pathinfo($fileName); //break filename into array of consitutent parts
+
+        //resize and re-save the file
+        //don't resize if is an svg as will error / not necessary
+        if ($parts['extension'] !== 'svg') {
+
+            Image::make($storedFile)
+//                ->orientate() //not sure if working - orient according to camera data
+                ->resize($maxWidth, null, function ($constraint) { //resize width
+                    $constraint->aspectRatio(); //maintain aspect ratio
+                    $constraint->upsize(); //prevent upsizing
+                })->save($destinationPath . $fileName);
+        } else {
+
+//                //cannot save using Image if is an svg - so use Storage method
+//                $uploadedFile->move($destinationPath, $fileName);
+//                dd($fileName);
+//                Storage::putFileAs($destinationPath, $uploadedFile, $fileName);
+
+        }
+
+        $imageData = [];
+        $imageData['filename'] = $fileName;
+        $imageData['filetype'] = $parts['extension'];
+        $imageData['filesize'] = Storage::disk('public')->size($destinationPath . $fileName);
+        $imageData['path'] = $destinationPath;
+
+        return $imageData;
+    }
+
+
+
+
+
+    /*
+     * Split out the files from the request
+     * Process each one, passing to saveImageToDiskAndResize
+     * optionally, pass a field name to fetch images from - if none, 'images' is used
+     * optionally, pass a max width (px) for the uploaded files to be resized to
+     */
+    public function fileUpload(Request $request, $fileDest, $fieldName = null, $maxWidth = null)
     {
         if (is_null($request->file())) {
             // N files in this request - don't process, return null
@@ -48,7 +127,7 @@ class ImageService
                 $uploadedFiles = $request->file($fieldName);
 
             } else {
-                $uploadedFiles = $request->file('images');
+                $uploadedFiles = $request->file('files');
             }
 
             $destinationPath = "$destinationFolder/"; // upload path
@@ -61,74 +140,17 @@ class ImageService
                 $maxWidth = 2000;
             }
 
-            // Create as seperate function to allow uploads of single or multiple files to be handled in the same function
-            // then push the result into the $imagesData array
-            function processFile($uploadedFile, $destinationPath, $maxWidth)
-            {
-
-                $uploadedFileName = $uploadedFile->getClientOriginalName();
-
-                // ensure a safe filename
-                $fileName = preg_replace("/[^A-Z0-9._-]/i", "_", $uploadedFileName);
-
-                // Check if a file with that name already exists
-                // if so, modify the name before uploading
-                $i = 0;
-                $parts = pathinfo($fileName); //break filename into array of consitutent parts
-
-                while (Storage::disk('public')->exists($destinationPath . $fileName)) {
-                    $i++; //increment value of $i
-                    $fileName = $parts["filename"] . "-" . $i . "." . $parts["extension"]; //add the new value of $i to the filename, before the . extension
-                }
-
-                //save the file to the correct location
-                Storage::disk('public')->put(
-                    $destinationPath . $fileName, //set the path and desired filename
-                    file_get_contents($uploadedFile->getRealPath())
-                );
-
-                $storedFile = Storage::disk('public')->get($destinationPath . $fileName);
-
-                //resize and re-save the file
-                //don't resize if is an svg as will error / not necessary
-                if ($parts['extension'] !== 'svg') {
-
-//                    $intervention = new \Intervention\Image\Image;
-//                    dd($intervention);
-                    Image::make($storedFile)
-//                ->orientate() //not sure if working - orient according to camera data
-                        ->resize($maxWidth, null, function ($constraint) { //resize width
-                            $constraint->aspectRatio(); //maintain aspect ratio
-                            $constraint->upsize(); //prevent upsizing
-                        })->save($destinationPath . $fileName);
-                } else {
-
-//                //cannot save using Image if is an svg - so use Storage method
-//                $uploadedFile->move($destinationPath, $fileName);
-//                dd($fileName);
-//                Storage::putFileAs($destinationPath, $uploadedFile, $fileName);
-
-                }
-
-                $imageData = [];
-                $imageData['filename'] = $fileName;
-                $imageData['filetype'] = $parts['extension'];
-                $imageData['filesize'] = Storage::disk('public')->size($destinationPath . $fileName);
-                $imageData['path'] = $destinationPath;
-
-                return $imageData;
-            }
-
             //process each uploaded file - either single or in a foreach depending on whether a single file or array of files were uploaded
+            //push data from each file into the $imagesData array
             //either way, the file data ends up in the $imagesData array
             if (getType($uploadedFiles) == 'array') {
                 foreach ($uploadedFiles as $uploadedFile) {
-                    $imageData = processFile($uploadedFile, $destinationPath, $maxWidth);
+                    $imageData = $this->saveImageToDiskAndResize($uploadedFile, $destinationPath, $maxWidth);
 
                     $imagesData[] = $imageData;
                 }
             } else {
-                $imageData = processFile($uploadedFiles, $destinationPath, $maxWidth);
+                $imageData = $this->saveImageToDiskAndResize($uploadedFiles, $destinationPath, $maxWidth);
 
                 $imagesData[] = $imageData;
             }
@@ -139,7 +161,7 @@ class ImageService
 
     /**
      * upload images with ajax / fetch
-     * calls the standard imageUpload function and returns json
+     * calls the standard fileUpload function and returns json
      *
      * @param Request $request
      * @param $fileDest
@@ -153,7 +175,7 @@ class ImageService
         //TODO use proper Request for validation
         //validate
         $messages = [
-            'file.image' => 'The logo file must be a valid image type (jpg, png, bmp, gif or svg)',
+            'file.image' => 'The file must be a valid image type (jpg, png, bmp, gif or svg)',
         ];
 
         $rules = [
@@ -168,7 +190,7 @@ class ImageService
         }
 
         //save, rename and resize the image using the imageService
-        $imagesData = $this->imageUpload($request, $fileDest, 'file', 1000);
+        $imagesData = $this->fileUpload($request, $fileDest, 'file', 1000);
 
         //TODO handle multiple files per field
 
@@ -183,6 +205,47 @@ class ImageService
             ]
         ]);
     }
+
+
+    /*
+     * Upload a video via ajax
+     * As fetchImageUpload but for video
+     * TODO combine fetchImageUpload and fetchVideoUpload as are essentially the same
+     */
+    public function fetchVideoUpload(Request $request, $fileDest, $fieldName = null){
+        $messages = [
+            'file.mimes' => 'The file must be a valid video type (mp4, ogx, oga, ogv, ogg, webm,)',
+        ];
+
+        $rules = [
+            'file' => 'mimes:mp4,ogx,oga,ogv,ogg,webm,qt'
+        ];
+//
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            //explicitly return json
+            return response()->json(['errors' => $validator->errors()]);
+        }
+
+        //save, rename and resize the image using the imageService
+        $videosData = $this->fileUpload($request, $fileDest, 'file', 1000);
+
+        //TODO handle multiple files per field
+
+        return response()->json([
+            'success' => 'true',
+            'message' => "Video Uploaded",
+            'fileData' => [
+                'filename' => $videosData[0]['filename'],
+                'filetype' => $videosData[0]['filetype'],
+                'filesize' => $videosData[0]['filesize'],
+                'path' => $videosData[0]['path'],
+            ]
+        ]);
+    }
+
+
 
     /**
      * accepts data for a single or multiple images (as array)
