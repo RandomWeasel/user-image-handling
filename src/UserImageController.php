@@ -54,7 +54,8 @@ class UserImageController extends UserImageBaseController
 
 
 
-    public function fetchImageUploadAndRecord(Request $request){
+    public function fetchImageUploadAndRecord(Request $request)
+    {
         $fileDest = 'uploads';
 
         //upload the file
@@ -69,6 +70,8 @@ class UserImageController extends UserImageBaseController
         $records = $this->imageService->saveImageRecords($fileData);
 
         return $uploadedImageJson;
+
+    }
 
 
 
