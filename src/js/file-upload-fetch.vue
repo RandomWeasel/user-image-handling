@@ -11,12 +11,24 @@
 
         <slot name="after-input"></slot>
 
-        <div v-if="fileIsImage" class="preview-uploaded-image" :style="'background-image: url(/' + fileData.path + fileData.filename + ')'">
+        <template v-if="showPreview">
+            <div v-if="fileIsImage" class="preview-uploaded-image" :style="'background-image: url(/' + fileData.path + fileData.filename + ')'">
+            </div>
+
+            <div v-if="fileIsDocument" class="preview-uploaded-file">
+                <a :href="'/' + fileData.path + fileData.filename" target="_blank">{{fileData.filename}}</a>
+            </div>
+
+            <div v-else="" class="preview-uploaded-file">
+                <a :href="'/' + fileData.path + fileData.filename" target="_blank">{{fileData.filename}}</a>
+            </div>
+        </template>
+
+        <div v-else="" v-if="success" class="message-formSuccess">
+            Upload Successful
         </div>
 
-        <div v-if="fileIsDocument" class="preview-uploaded-file">
-            <a :href="'/' + fileData.path + fileData.filename" target="_blank">{{fileData.filename}}</a>
-        </div>
+
 
         <field-errors :errorObject="fileErrors.file"></field-errors>
 
@@ -34,6 +46,7 @@
         return {
             fileData: '',
             fileErrors: '',
+            success: '',
         }
     },
 
@@ -52,6 +65,10 @@
         multiple: {
             type: Boolean,
             default: false,
+        },
+        showPreview: {
+            type: Boolean,
+            default: true,
         }
     },
 
@@ -74,6 +91,20 @@
 
         },
 
+        fileIsVideo(){
+            if(this.fileData.filetype){
+                let fileType = this.fileData.filetype.toLowerCase();
+
+                let videoTypes = ['mp4','ogx','oga','ogv','ogg','webm','qt'];
+                //TODO pass videoTypes from the MimeTypesService
+
+                if(videoTypes.includes(fileType)){
+                    return true;
+                }
+            }
+
+        },
+
         fileIsDocument(){
             if(this.fileData.filetype){
                 let fileType = this.fileData.filetype.toLowerCase();
@@ -84,7 +115,9 @@
                     return true;
                 }
             }
-        }
+        },
+
+
     },
 
     methods: {
@@ -132,6 +165,8 @@
 
                 if(json.success === 'true'){
                     this.fileData = json.fileData;
+
+                    this.success = true;
 
 //                    console.log('the file was uploaded to ' + this.parentIdentity);
                     //emit an event with the fileData

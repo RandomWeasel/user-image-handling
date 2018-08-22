@@ -238,7 +238,7 @@ class ImageService
         ];
 
         $rules = [
-            'file' => 'mimes:'.$this->mimeTypes->videoMimes(),
+            'file' => 'mimes:'.implode(',', $this->mimeTypes->videoMimes()),
         ];
 //
         $validator = Validator::make($request->all(), $rules, $messages);
