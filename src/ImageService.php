@@ -20,6 +20,12 @@ use Serosensa\UserImage\Models\UploadedImage;
  */
 class ImageService
 {
+
+    public function __construct(MimeTypesService $mimeTypesService){
+        $this->mimeTypes = $mimeTypesService;
+    }
+
+
     public function test()
     {
         return 'IMAGE SERVICE';
@@ -61,41 +67,47 @@ class ImageService
     }
 
     /*
-     * Save an image file to disk and resize
-     * Utilises saveFileToDisk
+     * If the file is an image, resize it according to the $maxWidth
      */
-    public function saveImageToDiskAndResize($uploadedFile, $destinationPath, $maxWidth){
+    public function saveFileToDiskResizeIfImage($uploadedFile, $destinationPath, $maxWidth){
 
         list($fileName, $storedFile) = $this->saveFileToDisk($uploadedFile, $destinationPath);
 
         $parts = pathinfo($fileName); //break filename into array of consitutent parts
 
-        //resize and re-save the file
-        //don't resize if is an svg as will error / not necessary
-        if ($parts['extension'] !== 'svg') {
+        //test if the file is an image type
+        if(in_array($parts['extension'], $this->mimeTypes->imageMimes())){
 
-            Image::make($storedFile)
+            //resize and re-save the file
+            //don't resize if is an svg as will error / not necessary
+            if ($parts['extension'] !== 'svg') {
+
+                Image::make($storedFile)
 //                ->orientate() //not sure if working - orient according to camera data
-                ->resize($maxWidth, null, function ($constraint) { //resize width
-                    $constraint->aspectRatio(); //maintain aspect ratio
-                    $constraint->upsize(); //prevent upsizing
-                })->save($destinationPath . $fileName);
-        } else {
+                    ->resize($maxWidth, null, function ($constraint) { //resize width
+                        $constraint->aspectRatio(); //maintain aspect ratio
+                        $constraint->upsize(); //prevent upsizing
+                    })->save($destinationPath . $fileName);
+            } else {
 
 //                //cannot save using Image if is an svg - so use Storage method
 //                $uploadedFile->move($destinationPath, $fileName);
 //                dd($fileName);
 //                Storage::putFileAs($destinationPath, $uploadedFile, $fileName);
 
+            }
         }
 
-        $imageData = [];
-        $imageData['filename'] = $fileName;
-        $imageData['filetype'] = $parts['extension'];
-        $imageData['filesize'] = Storage::disk('public')->size($destinationPath . $fileName);
-        $imageData['path'] = $destinationPath;
 
-        return $imageData;
+        //return the file data
+
+        $fileData = [];
+        $fileData['filename'] = $fileName;
+        $fileData['filetype'] = $parts['extension'];
+        $fileData['filesize'] = Storage::disk('public')->size($destinationPath . $fileName);
+        $fileData['path'] = $destinationPath;
+
+        return $fileData;
     }
 
 
@@ -103,10 +115,14 @@ class ImageService
 
 
     /*
-     * Split out the files from the request
-     * Process each one, passing to saveImageToDiskAndResize
+     * File Upload - performs the main bulk of upload work
+        * Check files exist
+        * Split out the files from the request
+        * Set the file destination
+        * Process each one, passing to saveFileToDiskResizeIfImage
+     *
      * optionally, pass a field name to fetch images from - if none, 'images' is used
-     * optionally, pass a max width (px) for the uploaded files to be resized to
+     * optionally, pass a max width (px) for uploaded images to be resized to
      */
     public function fileUpload(Request $request, $fileDest, $fieldName = null, $maxWidth = null)
     {
@@ -133,7 +149,7 @@ class ImageService
             $destinationPath = "$destinationFolder/"; // upload path
 
             // Create a variable to hold the returned image data
-            $imagesData = [];
+            $filesData = [];
 
             // Set a default maxWidth if one was not passed
             if ($maxWidth == null) {
@@ -141,23 +157,27 @@ class ImageService
             }
 
             //process each uploaded file - either single or in a foreach depending on whether a single file or array of files were uploaded
-            //push data from each file into the $imagesData array
-            //either way, the file data ends up in the $imagesData array
+            //push data from each file into the $filesData array
+            //either way, the file data ends up in the $filesData array
+
             if (getType($uploadedFiles) == 'array') {
                 foreach ($uploadedFiles as $uploadedFile) {
-                    $imageData = $this->saveImageToDiskAndResize($uploadedFile, $destinationPath, $maxWidth);
 
-                    $imagesData[] = $imageData;
+                    $imageData = $this->saveFileToDiskResizeIfImage($uploadedFile, $destinationPath, $maxWidth);
+
+                    $filesData[] = $imageData;
                 }
             } else {
-                $imageData = $this->saveImageToDiskAndResize($uploadedFiles, $destinationPath, $maxWidth);
+                $imageData = $this->saveFileToDiskResizeIfImage($uploadedFiles, $destinationPath, $maxWidth);
 
-                $imagesData[] = $imageData;
+                $filesData[] = $imageData;
             }
 
-            return ($imagesData);
+            return ($filesData);
         }
     }
+
+
 
     /**
      * upload images with ajax / fetch
@@ -175,7 +195,7 @@ class ImageService
         //TODO use proper Request for validation
         //validate
         $messages = [
-            'file.image' => 'The file must be a valid image type (jpg, png, bmp, gif or svg)',
+            'file.image' => "The file must be a valid image type (".$this->mimeTypes->imageMimesForHumans().")",
         ];
 
         $rules = [
@@ -214,11 +234,11 @@ class ImageService
      */
     public function fetchVideoUpload(Request $request, $fileDest, $fieldName = null){
         $messages = [
-            'file.mimes' => 'The file must be a valid video type (mp4, ogx, oga, ogv, ogg, webm,)',
+            'file.mimes' => "The file must be a valid video type (".$this->mimeTypes->videoMimesForHumans().")",
         ];
 
         $rules = [
-            'file' => 'mimes:mp4,ogx,oga,ogv,ogg,webm,qt'
+            'file' => 'mimes:'.$this->mimeTypes->videoMimes(),
         ];
 //
         $validator = Validator::make($request->all(), $rules, $messages);
