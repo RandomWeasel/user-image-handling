@@ -19,12 +19,12 @@
                 <a :href="'/' + fileData.path + fileData.filename" target="_blank">{{fileData.filename}}</a>
             </div>
 
-            <div v-else="" class="preview-uploaded-file">
+            <div v-if="fileIsOther" class="preview-uploaded-file">
                 <a :href="'/' + fileData.path + fileData.filename" target="_blank">{{fileData.filename}}</a>
             </div>
         </template>
 
-        <div v-else="" v-if="success" class="message-formSuccess">
+        <div v-if="success && ! showPreview" class="message-formSuccess">
             Upload Successful
         </div>
 
@@ -116,6 +116,14 @@
                 }
             }
         },
+
+        fileIsOther(){
+            if(this.fileData.filetype){
+                if(!this.fileIsImage && !this.fileIsVideo && !this.fileIsDocument){
+                    return true;
+                }
+            }
+        }
 
 
     },
