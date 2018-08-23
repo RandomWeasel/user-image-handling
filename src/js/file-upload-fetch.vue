@@ -19,6 +19,10 @@
                 <a :href="'/' + fileData.path + fileData.filename" target="_blank">{{fileData.filename}}</a>
             </div>
 
+            <div v-if="fileIsVideo" class="preview-uploaded-file">
+                <a :href="'/' + fileData.path + fileData.filename" target="_blank">{{fileData.filename}}</a>
+            </div>
+
             <div v-if="fileIsOther" class="preview-uploaded-file">
                 <a :href="'/' + fileData.path + fileData.filename" target="_blank">{{fileData.filename}}</a>
             </div>
@@ -69,6 +73,12 @@
         showPreview: {
             type: Boolean,
             default: true,
+        },
+        uniqueRef: {
+            //this unique ref is included in the event the comp emits
+            //use to identify a specific instance of the uploader
+            type: String,
+            required: false,
         }
     },
 
@@ -179,7 +189,10 @@
 //                    console.log('the file was uploaded to ' + this.parentIdentity);
                     //emit an event with the fileData
                     this.$parent.$emit(
-                        "file-upload", (this.fileData)
+                        "file-upload", {
+                                uniqueRef: this.uniqueRef,
+                                fileData: this.fileData,
+                            }
                     );
 
                     //display the image
