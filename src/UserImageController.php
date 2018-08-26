@@ -53,6 +53,13 @@ class UserImageController extends UserImageBaseController
     }
 
 
+
+    /*
+     * TODO - this method just calls the fetchVideoUpload method
+     * maybe it should do more of the work here?
+     * and make fetchVideoUpload responsible for fewer things
+     * that would also make this a better example to copy
+     */
     public function fetchVideoUpload(Request $request){
 
         $fileDest = 'uploads'; //TODO - ensure directory exists and is writable (chmod -R 777).  Also add contents to gitignore eg public/uploads/*
@@ -88,7 +95,7 @@ class UserImageController extends UserImageBaseController
 
 
 
-        /**
+    /**
      * Ajax file upload example
      * based on the image upload
      * Use with caution - more work is needed (see fileUploadService)

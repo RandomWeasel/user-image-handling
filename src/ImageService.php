@@ -2,6 +2,7 @@
 
 namespace Serosensa\UserImage;
 
+use App\Http\Requests\VideoUploadValidator;
 use Session;
 use Storage;
 use Illuminate\Http\Request;
@@ -29,6 +30,52 @@ class ImageService
     public function test()
     {
         return 'IMAGE SERVICE';
+    }
+
+
+    /*
+* Validate image file type
+* This should really be a FormRequest
+* but for some reason those aren't returning json
+*/
+    public function validateImage($request){
+        //validate
+        $messages = [
+            'file.image' => "The file must be a valid image type (".$this->mimeTypes->imageMimesForHumans().")",
+        ];
+
+        $rules = [
+            'file' => 'image'
+        ];
+//
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            //explicitly return json
+            return response()->json(['errors' => $validator->errors()]);
+        }
+    }
+
+    /*
+     * Validate video file type
+     * This should really be a FormRequest
+     * but for some reason those aren't returning json
+     */
+    public function validateVideo($request){
+        $messages = [
+            'file.mimes' => "The file must be a valid video type (".$this->mimeTypes->videoMimesForHumans().")",
+        ];
+
+        $rules = [
+            'file' => 'mimes:'.implode(',', $this->mimeTypes->videoMimes()),
+        ];
+//
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            //explicitly return json
+            return response()->json(['errors' => $validator->errors()]);
+        }
     }
 
 
@@ -191,22 +238,11 @@ class ImageService
      */
     public function fetchImageUpload(Request $request, $fileDest, $fieldName = null, $maxWidth = null)
     {
-
         //TODO use proper Request for validation
-        //validate
-        $messages = [
-            'file.image' => "The file must be a valid image type (".$this->mimeTypes->imageMimesForHumans().")",
-        ];
+        $validationErrors = $this->validateImage($request);
 
-        $rules = [
-            'file' => 'image'
-        ];
-//
-        $validator = Validator::make($request->all(), $rules, $messages);
-
-        if ($validator->fails()) {
-            //explicitly return json
-            return response()->json(['errors' => $validator->errors()]);
+        if($validationErrors){
+            return $validationErrors;
         }
 
         //save, rename and resize the image using the imageService
@@ -227,25 +263,18 @@ class ImageService
     }
 
 
+
     /*
      * Upload a video via ajax
      * As fetchImageUpload but for video
      * TODO combine fetchImageUpload and fetchVideoUpload as are essentially the same
      */
     public function fetchVideoUpload(Request $request, $fileDest, $fieldName = null){
-        $messages = [
-            'file.mimes' => "The file must be a valid video type (".$this->mimeTypes->videoMimesForHumans().")",
-        ];
 
-        $rules = [
-            'file' => 'mimes:'.implode(',', $this->mimeTypes->videoMimes()),
-        ];
-//
-        $validator = Validator::make($request->all(), $rules, $messages);
+        $validationErrors = $this->validateVideo($request);
 
-        if ($validator->fails()) {
-            //explicitly return json
-            return response()->json(['errors' => $validator->errors()]);
+        if($validationErrors){
+            return $validationErrors;
         }
 
         //save, rename and resize the image using the imageService
