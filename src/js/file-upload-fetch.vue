@@ -16,15 +16,15 @@
             </div>
 
             <div v-if="fileIsDocument" class="preview-uploaded-file">
-                <a :href="'/' + fileData.path + fileData.filename" target="_blank">{{fileData.filename}}</a>
+                <a :href="'/' + fileData.path + fileData.filename" target="_blank">Uploaded {{fileData.filename}}</a>
             </div>
 
             <div v-if="fileIsVideo" class="preview-uploaded-file">
-                <a :href="'/' + fileData.path + fileData.filename" target="_blank">{{fileData.filename}}</a>
+                <a :href="'/' + fileData.path + fileData.filename" target="_blank">Uploaded {{fileData.filename}}</a>
             </div>
 
             <div v-if="fileIsOther" class="preview-uploaded-file">
-                <a :href="'/' + fileData.path + fileData.filename" target="_blank">{{fileData.filename}}</a>
+                <a :href="'/' + fileData.path + fileData.filename" target="_blank">Uploaded {{fileData.filename}}</a>
             </div>
         </template>
 

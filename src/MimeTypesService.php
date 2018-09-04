@@ -27,7 +27,7 @@ class MimeTypesService
 
 
     public function videoMimes(){
-        return ['mp4','ogx','oga','ogv','ogg','webm','qt'];
+        return ['mp4','ogx','oga','ogv','ogg','webm','qt','m4v'];
     }
 
     public function videoMimesForHumans(){
